@@ -1,0 +1,464 @@
+// Termprotect — App Gestión de Personas
+// Base de datos: PostgreSQL (Supabase)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─────────────────────────────────────────────
+// SEDES
+// ─────────────────────────────────────────────
+
+model Sede {
+  id           String   @id @default(cuid())
+  name         String   @unique // Barcelona, Madrid, Valencia, Málaga
+  convenioCode String?           // ej: "28000805011982"
+  convenioName String?
+  vacationDays Int      @default(30) // días según convenio colectivo
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  employees Employee[]
+  calendars SedeCalendar[]
+  leaveBalances LeaveBalance[]
+
+  @@map("sedes")
+}
+
+// ─────────────────────────────────────────────
+// CALENDARIO DE FESTIVOS POR SEDE
+// ─────────────────────────────────────────────
+
+model SedeCalendar {
+  id          String           @id @default(cuid())
+  sedeId      String
+  date        DateTime         @db.Date
+  description String
+  type        CalendarDayType  // NACIONAL, AUTONOMICO, LOCAL
+
+  sede Sede @relation(fields: [sedeId], references: [id])
+
+  @@unique([sedeId, date])
+  @@map("sede_calendars")
+}
+
+enum CalendarDayType {
+  NACIONAL
+  AUTONOMICO
+  LOCAL
+}
+
+// ─────────────────────────────────────────────
+// EMPLEADOS
+// ─────────────────────────────────────────────
+
+model Employee {
+  id               String         @id @default(cuid())
+
+  // Datos personales
+  nombres          String
+  apellidos        String
+  documentType     DocumentType   // DNI, TIE, PASAPORTE
+  documentNumber   String         @unique // también es el username de login
+  address          String?
+  phone            String?
+  email            String?        // opcional — solo para notificaciones
+  birthDate        DateTime?      @db.Date
+
+  // Contacto de emergencia
+  emergencyName     String?
+  emergencyPhone    String?
+  emergencyRelation EmergencyRelation?
+
+  // Datos laborales
+  sedeId           String
+  department       String?
+  position         String?
+  contractType     ContractType?
+  workMode         WorkMode       @default(PRESENCIAL)
+  startDate        DateTime?      @db.Date
+  endDate          DateTime?      @db.Date   // solo para contratos temporales
+  trialEndDate     DateTime?      @db.Date
+  requiresDriving  Boolean        @default(false)
+  status           EmployeeStatus @default(ACTIVE)
+
+  // Auth
+  passwordHash          String
+  role                  UserRole   @default(EMPLEADO)
+  mustChangePassword    Boolean    @default(true)
+  lastLogin             DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones
+  sede             Sede             @relation(fields: [sedeId], references: [id])
+  documents        EmployeeDocument[]
+  history          EmployeeHistory[]
+  timeEntries      TimeEntry[]
+  leaveRequests    LeaveRequest[]
+  leaveBalances    LeaveBalance[]
+  evaluationsAsEmployee Evaluation[] @relation("EvaluatedEmployee")
+  evaluationsAsEvaluator Evaluation[] @relation("Evaluator")
+  trainingEnrollments TrainingEnrollment[]
+  notifications    Notification[]
+  auditLogs        AuditLog[]
+
+  @@map("employees")
+}
+
+enum DocumentType {
+  DNI
+  TIE
+  PASAPORTE
+}
+
+enum EmergencyRelation {
+  CONYUGE
+  PADRE_MADRE
+  HERMANO_A
+  HIJO_A
+  OTRO
+}
+
+enum ContractType {
+  INDEFINIDO
+  TEMPORAL
+  FORMACION
+  PRACTICAS
+}
+
+enum WorkMode {
+  PRESENCIAL
+  TELETRABAJO
+  HIBRIDO
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  BAJA_MEDICA
+  EXCEDENCIA
+  BAJA_VOLUNTARIA
+  DESPIDO
+}
+
+enum UserRole {
+  ADMIN
+  RRHH
+  MANAGER
+  EMPLEADO
+}
+
+// ─────────────────────────────────────────────
+// DOCUMENTOS ADJUNTOS DEL EMPLEADO
+// ─────────────────────────────────────────────
+
+model EmployeeDocument {
+  id          String       @id @default(cuid())
+  employeeId  String
+  type        DocumentKind
+  fileUrl     String       // URL en Supabase Storage
+  fileName    String
+  expiresAt   DateTime?    @db.Date  // para DNI, permiso conducir, etc.
+  uploadedAt  DateTime     @default(now())
+  uploadedBy  String?      // id del usuario que subió el archivo
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@map("employee_documents")
+}
+
+enum DocumentKind {
+  DNI_ANVERSO
+  DNI_REVERSO
+  CERTIFICADO_BANCARIO
+  PERMISO_CONDUCIR
+  CONTRATO
+  RGPD
+  PRL
+  OTRO
+}
+
+// ─────────────────────────────────────────────
+// HISTORIAL DE CAMBIOS DEL EMPLEADO
+// ─────────────────────────────────────────────
+
+model EmployeeHistory {
+  id         String   @id @default(cuid())
+  employeeId String
+  field      String   // "sede", "position", "contractType", etc.
+  oldValue   String?
+  newValue   String?
+  changedBy  String   // id del usuario que hizo el cambio
+  changedAt  DateTime @default(now())
+  reason     String?
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@map("employee_history")
+}
+
+// ─────────────────────────────────────────────
+// CONTROL DE PRESENCIA — FICHAJES
+// ─────────────────────────────────────────────
+
+model TimeEntry {
+  id           String          @id @default(cuid())
+  employeeId   String
+  date         DateTime        @db.Date
+  clockIn      DateTime        // hora de entrada
+  clockOut     DateTime?       // hora de salida (null si aún en jornada)
+  breakMinutes Int             @default(0)
+  source       TimeEntrySource @default(WEB)
+  ipAddress    String?
+  notes        String?
+  isManual     Boolean         @default(false) // true si RRHH lo añadió manualmente
+  manualReason String?
+  createdAt    DateTime        @default(now())
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@map("time_entries")
+}
+
+enum TimeEntrySource {
+  WEB
+  MOBILE
+  MANUAL
+}
+
+// ─────────────────────────────────────────────
+// VACACIONES Y AUSENCIAS
+// ─────────────────────────────────────────────
+
+model LeaveRequest {
+  id          String      @id @default(cuid())
+  employeeId  String
+  type        LeaveType
+  startDate   DateTime    @db.Date
+  endDate     DateTime    @db.Date
+  totalDays   Int
+  status      LeaveStatus @default(PENDIENTE)
+  notes       String?
+  approvedBy  String?     // id del manager/RRHH que aprueba
+  approvedAt  DateTime?
+  rejectedReason String?
+  attachmentUrl String?   // justificante (IT, permiso, etc.)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@map("leave_requests")
+}
+
+enum LeaveType {
+  VACACIONES
+  PERMISO_MATRIMONIO
+  PERMISO_NACIMIENTO
+  PERMISO_FALLECIMIENTO_1
+  PERMISO_FALLECIMIENTO_2
+  PERMISO_HOSPITALIZACION
+  PERMISO_MUDANZA
+  PERMISO_DEBER_PUBLICO
+  PERMISO_EXAMEN
+  PERMISO_LACTANCIA
+  PERMISO_ASUNTOS_PROPIOS
+  INCAPACIDAD_TEMPORAL
+  EXCEDENCIA_VOLUNTARIA
+  EXCEDENCIA_HIJOS
+  EXCEDENCIA_FAMILIARES
+  OTRO
+}
+
+enum LeaveStatus {
+  PENDIENTE
+  APROBADA
+  RECHAZADA
+  CANCELADA
+}
+
+// Saldo de vacaciones por empleado y año
+model LeaveBalance {
+  id            String   @id @default(cuid())
+  employeeId    String
+  sedeId        String
+  year          Int
+  totalDays     Int      // días que corresponden según convenio
+  usedDays      Int      @default(0)
+  pendingDays   Int      @default(0) // solicitudes pendientes de aprobar
+  updatedAt     DateTime @updatedAt
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  sede     Sede     @relation(fields: [sedeId], references: [id])
+
+  @@unique([employeeId, year])
+  @@map("leave_balances")
+}
+
+// ─────────────────────────────────────────────
+// EVALUACIÓN DEL DESEMPEÑO
+// ─────────────────────────────────────────────
+
+model EvalCycle {
+  id          String          @id @default(cuid())
+  name        String          // "Evaluación Semestral S1 2025"
+  startDate   DateTime        @db.Date
+  endDate     DateTime        @db.Date
+  status      EvalCycleStatus @default(BORRADOR)
+  createdBy   String
+  createdAt   DateTime        @default(now())
+
+  evaluations Evaluation[]
+
+  @@map("eval_cycles")
+}
+
+enum EvalCycleStatus {
+  BORRADOR
+  ACTIVO
+  CERRADO
+}
+
+model Evaluation {
+  id              String      @id @default(cuid())
+  cycleId         String
+  employeeId      String
+  evaluatorId     String
+  selfScores      Json?       // { calidad: 4, objetivos: 3, trabajo_equipo: 5, ... }
+  managerScores   Json?       // mismas dimensiones
+  overallScore    Float?
+  selfComments    String?
+  managerComments String?
+  status          EvalStatus  @default(PENDIENTE)
+  pipRequired     Boolean     @default(false)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  cycle    EvalCycle @relation(fields: [cycleId], references: [id])
+  employee Employee  @relation("EvaluatedEmployee", fields: [employeeId], references: [id])
+  evaluator Employee @relation("Evaluator", fields: [evaluatorId], references: [id])
+  improvementPlan ImprovementPlan?
+
+  @@map("evaluations")
+}
+
+enum EvalStatus {
+  PENDIENTE
+  AUTOEVALUACION_COMPLETADA
+  MANAGER_COMPLETADA
+  CERRADA
+}
+
+model ImprovementPlan {
+  id           String   @id @default(cuid())
+  evaluationId String   @unique
+  objectives   String
+  deadline     DateTime @db.Date
+  status       String   @default("ACTIVO") // ACTIVO, COMPLETADO, ARCHIVADO
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  evaluation Evaluation @relation(fields: [evaluationId], references: [id])
+
+  @@map("improvement_plans")
+}
+
+// ─────────────────────────────────────────────
+// FORMACIÓN Y DESARROLLO
+// ─────────────────────────────────────────────
+
+model Training {
+  id             String       @id @default(cuid())
+  title          String
+  provider       String?
+  mode           TrainingMode @default(PRESENCIAL)
+  hours          Float
+  cost           Float?
+  mandatory      Boolean      @default(false)
+  mandatoryType  String?      // "PRL", "RGPD", "IGUALDAD", etc.
+  fundaeEligible Boolean      @default(false)
+  description    String?
+  startDate      DateTime?    @db.Date
+  endDate        DateTime?    @db.Date
+  createdAt      DateTime     @default(now())
+
+  enrollments TrainingEnrollment[]
+
+  @@map("trainings")
+}
+
+enum TrainingMode {
+  PRESENCIAL
+  ONLINE
+  MIXTA
+}
+
+model TrainingEnrollment {
+  id            String           @id @default(cuid())
+  trainingId    String
+  employeeId    String
+  status        EnrollmentStatus @default(INSCRITO)
+  completedAt   DateTime?
+  certificateUrl String?
+  hoursCompleted Float?
+  createdAt     DateTime         @default(now())
+
+  training Training @relation(fields: [trainingId], references: [id])
+  employee Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([trainingId, employeeId])
+  @@map("training_enrollments")
+}
+
+enum EnrollmentStatus {
+  INSCRITO
+  COMPLETADO
+  NO_ASISTIO
+  CANCELADO
+}
+
+// ─────────────────────────────────────────────
+// NOTIFICACIONES
+// ─────────────────────────────────────────────
+
+model Notification {
+  id         String   @id @default(cuid())
+  employeeId String
+  type       String   // "LEAVE_APPROVED", "CONTRACT_EXPIRING", etc.
+  title      String
+  message    String
+  read       Boolean  @default(false)
+  emailSent  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+// ─────────────────────────────────────────────
+// AUDITORÍA (RGPD)
+// ─────────────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String   // quien hizo la acción
+  action     String   // "VIEW_EMPLOYEE", "EDIT_EMPLOYEE", "DELETE_DOCUMENT", etc.
+  entityType String   // "Employee", "Document", "TimeEntry", etc.
+  entityId   String?
+  details    Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  user Employee @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
