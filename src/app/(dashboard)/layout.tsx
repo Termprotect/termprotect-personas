@@ -8,21 +8,24 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
-  if (!session) redirect("/login");
+  let session;
+  try {
+    session = await auth();
+  } catch {
+    redirect("/login");
+  }
+
+  if (!session?.user) redirect("/login");
+
+  const role = session.user.role ?? "EMPLEADO";
+  const nombres = session.user.nombres ?? "";
+  const apellidos = session.user.apellidos ?? "";
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
-      {/* Barra lateral */}
-      <Sidebar role={session.user.role} />
-
-      {/* Contenido principal */}
+      <Sidebar role={role} />
       <div className="flex flex-col flex-1 overflow-hidden">
-        <Topbar
-          nombres={session.user.nombres}
-          apellidos={session.user.apellidos}
-          role={session.user.role}
-        />
+        <Topbar nombres={nombres} apellidos={apellidos} role={role} />
         <main className="flex-1 overflow-y-auto p-6">
           {children}
         </main>

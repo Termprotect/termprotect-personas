@@ -15,7 +15,9 @@ export default auth((req) => {
   }
 
   // Si hay sesión y debe cambiar contraseña → redirigir al cambio
-  if (session?.user.mustChangePassword && pathname !== "/cambiar-password") {
+  const bypassRoutes = ["/cambiar-password", "/api/change-password", "/api/auth"];
+  const isBypass = bypassRoutes.some((r) => pathname.startsWith(r));
+  if (session?.user.mustChangePassword && !isBypass) {
     return NextResponse.redirect(new URL("/cambiar-password", req.url));
   }
 

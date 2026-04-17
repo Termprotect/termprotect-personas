@@ -16,7 +16,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     error: "/login",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
+      // Al hacer login (user existe) → cargar datos frescos de la BD
       if (user) {
         token.id = user.id;
         token.role = user.role;
@@ -24,6 +25,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.nombres = user.nombres;
         token.apellidos = user.apellidos;
         token.mustChangePassword = user.mustChangePassword;
+      }
+      // En cada request, si tenemos id, refrescar mustChangePassword desde BD
+      // Esto garantiza que el cambio de contraseña se refleja de inmediato
+      if (token.id && trigger !== "signIn") {
+        try {
+          const employee = await db.employee.findUnique({
+            where: { id: token.id as string },
+            select: { mustChangePassword: true },
+          });
+          if (employee) {
+            token.mustChangePassword = employee.mustChangePassword;
+          }
+        } catch {
+          // Si falla la consulta, mantener el valor del token
+        }
       }
       return token;
     },
@@ -97,6 +113,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 });
 
 // Tipos extendidos para TypeScript
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+    role: string;
+    sedeId: string;
+    nombres: string;
+    apellidos: string;
+    mustChangePassword: boolean;
+  }
+}
+
 declare module "next-auth" {
   interface User {
     role: string;

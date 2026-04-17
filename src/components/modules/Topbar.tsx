@@ -1,6 +1,5 @@
 "use client";
 
-import { signOut } from "next-auth/react";
 import { LogOut, User } from "lucide-react";
 
 const roleLabelMap: Record<string, string> = {
@@ -40,7 +39,7 @@ export default function Topbar({
         </div>
 
         <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
+          onClick={() => { window.location.href = "/api/auth/signout?callbackUrl=/login"; }}
           className="w-8 h-8 flex items-center justify-center rounded-lg
                      text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
           title="Cerrar sesión"
