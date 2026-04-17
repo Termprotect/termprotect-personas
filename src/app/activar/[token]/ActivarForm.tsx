@@ -31,7 +31,6 @@ export default function ActivarForm({
     resolver: zodResolver(activationSchema),
     defaultValues: {
       emergencyRelation: "CONYUGE",
-      acceptClausula: false,
     },
   });
 
