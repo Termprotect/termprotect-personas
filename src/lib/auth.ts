@@ -113,7 +113,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 });
 
 // Tipos extendidos para TypeScript
-declare module "next-auth/jwt" {
+declare module "@auth/core/jwt" {
   interface JWT {
     id: string;
     role: string;
