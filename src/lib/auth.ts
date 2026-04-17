@@ -19,7 +19,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user, trigger }) {
       // Al hacer login (user existe) → cargar datos frescos de la BD
       if (user) {
-        token.id = user.id;
+        token.id = user.id!;
         token.role = user.role;
         token.sedeId = user.sedeId;
         token.nombres = user.nombres;
