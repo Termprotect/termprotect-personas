@@ -10,14 +10,42 @@ import {
   type ActivationInput,
   CLAUSULA_TEXTO,
 } from "@/lib/validators/activation";
+import PhotoCapture from "./PhotoCapture";
+import DocumentUpload, { type DocumentSlot } from "./DocumentUpload";
 
 export default function ActivarForm({
   token,
   requiresDriving,
+  documentType,
 }: {
   token: string;
   requiresDriving: boolean;
+  documentType: "DNI" | "TIE" | "PASAPORTE";
 }) {
+  const idSlots: DocumentSlot[] =
+    documentType === "PASAPORTE"
+      ? [{ kind: "PASAPORTE", label: "Pasaporte", description: "Página con foto", required: true }]
+      : documentType === "TIE"
+      ? [
+          { kind: "TIE_ANVERSO", label: "TIE / NIE — anverso", required: true },
+          { kind: "TIE_REVERSO", label: "TIE / NIE — reverso", required: true },
+        ]
+      : [
+          { kind: "DNI_ANVERSO", label: "DNI — anverso", required: true },
+          { kind: "DNI_REVERSO", label: "DNI — reverso", required: true },
+        ];
+
+  const bankSlot: DocumentSlot = {
+    kind: "CERTIFICADO_BANCARIO",
+    label: "Certificado de titularidad bancaria",
+    description: "Documento del banco que acredite la titularidad del IBAN",
+    required: true,
+  };
+
+  const drivingSlots: DocumentSlot[] = [
+    { kind: "PERMISO_CONDUCIR", label: "Permiso de conducir", required: true },
+    { kind: "CAP", label: "CAP (Certificado de Aptitud Profesional)" },
+  ];
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -152,6 +180,32 @@ export default function ActivarForm({
             <Field label="Caducidad CAP" error={errors.capExpiresAt?.message}>
               <input type="date" {...register("capExpiresAt")} className={inputCls} />
             </Field>
+          </div>
+        </Section>
+      )}
+
+      <Section title="Foto de perfil">
+        <PhotoCapture token={token} onUploaded={() => { /* foto ya persistida server-side */ }} />
+      </Section>
+
+      <Section title="Documento de identidad">
+        <div className="space-y-2">
+          {idSlots.map((s) => (
+            <DocumentUpload key={s.kind} token={token} slot={s} />
+          ))}
+        </div>
+      </Section>
+
+      <Section title="Certificado bancario">
+        <DocumentUpload token={token} slot={bankSlot} />
+      </Section>
+
+      {requiresDriving && (
+        <Section title="Documentación de conducción">
+          <div className="space-y-2">
+            {drivingSlots.map((s) => (
+              <DocumentUpload key={s.kind} token={token} slot={s} />
+            ))}
           </div>
         </Section>
       )}

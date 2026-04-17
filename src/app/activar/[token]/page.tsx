@@ -60,7 +60,11 @@ export default async function ActivarPage({
           </p>
         </div>
 
-        <ActivarForm token={token} requiresDriving={employee.requiresDriving} />
+        <ActivarForm
+          token={token}
+          requiresDriving={employee.requiresDriving}
+          documentType={employee.documentType as "DNI" | "TIE" | "PASAPORTE"}
+        />
       </div>
     </main>
   );
