@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { Clock, XCircle } from "lucide-react";
+import ActivarForm from "./ActivarForm";
 
 export const dynamic = "force-dynamic";
 
@@ -13,55 +14,90 @@ export default async function ActivarPage({
   const employee = await db.employee.findUnique({
     where: { invitationToken: token },
     select: {
+      id: true,
       nombres: true,
       apellidos: true,
-      invitationTokenExpiresAt: true,
+      email: true,
+      documentType: true,
+      documentNumber: true,
+      position: true,
+      requiresDriving: true,
       status: true,
+      invitationTokenExpiresAt: true,
+      sede: { select: { name: true } },
     },
   });
 
-  const expired =
-    employee?.invitationTokenExpiresAt &&
-    employee.invitationTokenExpiresAt < new Date();
+  // Errores de acceso
+  if (!employee) return <ErrorCard title="Enlace no válido" message="Este enlace de invitación no existe o ya ha sido utilizado. Pide a Recursos Humanos una nueva invitación." variant="error" />;
+  if (employee.status !== "INVITADO") return <ErrorCard title="Cuenta ya activada" message="Esta cuenta ya ha sido activada. Accede con tu número de documento y contraseña desde la pantalla de login." variant="info" />;
+  if (employee.invitationTokenExpiresAt && employee.invitationTokenExpiresAt < new Date()) {
+    return <ErrorCard title="Enlace caducado" message="El enlace de invitación ha caducado. Pide a Recursos Humanos que te envíe uno nuevo." variant="warning" />;
+  }
 
   return (
+    <main className="min-h-screen bg-slate-50 py-10 px-4">
+      <div className="max-w-2xl mx-auto">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-slate-800">Completa tu alta en Termprotect</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Hola <strong>{employee.nombres} {employee.apellidos}</strong>. Revisa los datos precargados por RRHH, completa tu información y crea tu contraseña.
+          </p>
+        </div>
+
+        <div className="bg-white rounded-xl border border-slate-200 p-5 mb-5">
+          <h2 className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-3">Datos registrados por RRHH</h2>
+          <dl className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <Row label="Nombre" value={`${employee.nombres} ${employee.apellidos}`} />
+            <Row label="Documento" value={`${employee.documentType} ${employee.documentNumber}`} />
+            <Row label="Email" value={employee.email ?? "—"} />
+            <Row label="Cargo" value={employee.position ?? "—"} />
+            <Row label="Sede" value={employee.sede.name} />
+            <Row label="Conducción de vehículos" value={employee.requiresDriving ? "Sí" : "No"} />
+          </dl>
+          <p className="text-xs text-slate-400 mt-3">
+            Si alguno de estos datos es incorrecto, contacta con RRHH antes de continuar.
+          </p>
+        </div>
+
+        <ActivarForm token={token} requiresDriving={employee.requiresDriving} />
+      </div>
+    </main>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt className="text-xs text-slate-500">{label}</dt>
+      <dd className="text-slate-800 font-medium">{value}</dd>
+    </div>
+  );
+}
+
+function ErrorCard({
+  title,
+  message,
+  variant,
+}: {
+  title: string;
+  message: string;
+  variant: "error" | "warning" | "info";
+}) {
+  const config = {
+    error: { bg: "bg-rose-50", icon: "text-rose-600", Icon: XCircle },
+    warning: { bg: "bg-amber-50", icon: "text-amber-600", Icon: Clock },
+    info: { bg: "bg-sky-50", icon: "text-sky-600", Icon: Clock },
+  }[variant];
+  const Icon = config.Icon;
+  return (
     <main className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white rounded-xl border border-slate-200 shadow-sm p-8">
-        {!employee ? (
-          <div className="text-center space-y-3">
-            <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center mx-auto">
-              <XCircle className="w-6 h-6 text-rose-600" />
-            </div>
-            <h1 className="text-xl font-bold text-slate-800">Enlace no válido</h1>
-            <p className="text-sm text-slate-500">
-              Este enlace de invitación no existe o ya ha sido utilizado.
-              Pide a Recursos Humanos una nueva invitación.
-            </p>
-          </div>
-        ) : expired ? (
-          <div className="text-center space-y-3">
-            <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center mx-auto">
-              <Clock className="w-6 h-6 text-amber-600" />
-            </div>
-            <h1 className="text-xl font-bold text-slate-800">Enlace caducado</h1>
-            <p className="text-sm text-slate-500">
-              El enlace de invitación ha caducado. Pide a Recursos Humanos que te envíe uno nuevo.
-            </p>
-          </div>
-        ) : (
-          <div className="text-center space-y-3">
-            <h1 className="text-xl font-bold text-slate-800">
-              Bienvenido/a, {employee.nombres}
-            </h1>
-            <p className="text-sm text-slate-500">
-              El formulario de alta está en construcción. Próximamente podrás crear tu contraseña,
-              completar tus datos y firmar la cláusula de protección de datos.
-            </p>
-            <p className="text-xs text-slate-400 pt-4 border-t border-slate-100">
-              Termprotect — Gestión de personas
-            </p>
-          </div>
-        )}
+      <div className="w-full max-w-md bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center space-y-3">
+        <div className={`w-12 h-12 rounded-full ${config.bg} flex items-center justify-center mx-auto`}>
+          <Icon className={`w-6 h-6 ${config.icon}`} />
+        </div>
+        <h1 className="text-xl font-bold text-slate-800">{title}</h1>
+        <p className="text-sm text-slate-500">{message}</p>
       </div>
     </main>
   );
