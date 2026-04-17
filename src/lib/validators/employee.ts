@@ -42,8 +42,8 @@ export const createEmployeeSchema = z.object({
     .max(20)
     .optional()
     .or(z.literal("").transform(() => undefined)),
-  role: z.enum(["EMPLEADO", "MANAGER", "RRHH"]).default("EMPLEADO"),
-  requiresDriving: z.boolean().default(false),
+  role: z.enum(["EMPLEADO", "MANAGER", "RRHH"]),
+  requiresDriving: z.boolean(),
 }).superRefine((data, ctx) => {
   // Validar formato DNI/TIE
   if (data.documentType !== "PASAPORTE" && !nifRegex.test(data.documentNumber)) {
