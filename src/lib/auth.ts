@@ -84,9 +84,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         });
 
         if (!employee) return null;
-        if (employee.status === "BAJA_VOLUNTARIA" || employee.status === "DESPIDO") {
-          return null; // empleados dados de baja no pueden acceder
+        if (
+          employee.status === "BAJA_VOLUNTARIA" ||
+          employee.status === "DESPIDO" ||
+          employee.status === "INVITADO"
+        ) {
+          return null; // no pueden acceder por login con contraseña
         }
+        if (!employee.passwordHash) return null; // empleado sin contraseña (ej: pendiente de completar invitación)
 
         const passwordMatch = await bcrypt.compare(password, employee.passwordHash);
         if (!passwordMatch) return null;
