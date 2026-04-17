@@ -6,7 +6,7 @@ export default auth((req) => {
   const session = req.auth;
 
   // Rutas públicas (no requieren login)
-  const publicRoutes = ["/login", "/api/auth"];
+  const publicRoutes = ["/login", "/api/auth", "/activar", "/api/activar"];
   const isPublic = publicRoutes.some((r) => pathname.startsWith(r));
 
   // Si no hay sesión y la ruta no es pública → redirigir a login
