@@ -70,6 +70,8 @@ model Employee {
   phone            String?
   email            String?        // opcional — solo para notificaciones
   birthDate        DateTime?      @db.Date
+  photoUrl         String?        // foto de perfil (tomada en el onboarding o subida por RRHH)
+  photoUploadedAt  DateTime?
 
   // Contacto de emergencia
   emergencyName     String?
@@ -77,28 +79,53 @@ model Employee {
   emergencyRelation EmergencyRelation?
 
   // Datos laborales
-  sedeId           String
-  department       String?
-  position         String?
-  contractType     ContractType?
-  workMode         WorkMode       @default(PRESENCIAL)
-  startDate        DateTime?      @db.Date
-  endDate          DateTime?      @db.Date   // solo para contratos temporales
-  trialEndDate     DateTime?      @db.Date
-  requiresDriving  Boolean        @default(false)
-  status           EmployeeStatus @default(ACTIVE)
+  sedeId                String
+  department            String?
+  position              String?
+  contractType          ContractType?
+  workMode              WorkMode       @default(PRESENCIAL)
+  startDate             DateTime?      @db.Date
+  endDate               DateTime?      @db.Date   // solo para contratos temporales
+  trialEndDate          DateTime?      @db.Date
+  requiresDriving       Boolean        @default(false)
+  status                EmployeeStatus @default(INVITADO)
+  socialSecurityNumber  String?        // NAF
+  reportsToId           String?        // jefe directo
+
+  // Datos bancarios (capturados por el propio trabajador en el onboarding)
+  bankAccountHolder     String?
+  iban                  String?
+
+  // Datos de chofer (si requiresDriving = true)
+  drivingLicenseNumber     String?
+  drivingLicenseCategory   String?       // B, C, C+E, D...
+  drivingLicenseExpiresAt  DateTime?     @db.Date
+  capNumber                String?
+  capExpiresAt             DateTime?     @db.Date
 
   // Auth
-  passwordHash          String
+  passwordHash          String?
   role                  UserRole   @default(EMPLEADO)
-  mustChangePassword    Boolean    @default(true)
+  mustChangePassword    Boolean    @default(false)
   lastLogin             DateTime?
+
+  // Invitación (onboarding)
+  invitationToken          String?    @unique
+  invitationTokenExpiresAt DateTime?
+  invitationSentAt         DateTime?
+
+  // Cláusula RGPD firmada
+  clausulaVersion     String?
+  clausulaAcceptedAt  DateTime?
+  clausulaAcceptedIp  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relaciones
   sede             Sede             @relation(fields: [sedeId], references: [id])
+  reportsTo        Employee?        @relation("ReportingLine", fields: [reportsToId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subordinates     Employee[]       @relation("ReportingLine")
   documents        EmployeeDocument[]
   history          EmployeeHistory[]
   timeEntries      TimeEntry[]
@@ -141,6 +168,7 @@ enum WorkMode {
 }
 
 enum EmployeeStatus {
+  INVITADO
   ACTIVE
   BAJA_MEDICA
   EXCEDENCIA
@@ -177,8 +205,12 @@ model EmployeeDocument {
 enum DocumentKind {
   DNI_ANVERSO
   DNI_REVERSO
+  TIE_ANVERSO
+  TIE_REVERSO
+  PASAPORTE
   CERTIFICADO_BANCARIO
   PERMISO_CONDUCIR
+  CAP
   CONTRATO
   RGPD
   PRL
