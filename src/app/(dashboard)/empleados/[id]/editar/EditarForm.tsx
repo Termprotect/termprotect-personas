@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import {
@@ -65,7 +65,9 @@ export default function EditarForm({
     watch,
     formState: { errors, isDirty },
   } = useForm<UpdateEmployeeInput>({
-    resolver: zodResolver(updateEmployeeSchema),
+    // Cast necesario porque el schema usa preprocess/transform:
+    // el input del form (strings) no coincide tipo-a-tipo con el output parseado.
+    resolver: zodResolver(updateEmployeeSchema) as unknown as Resolver<UpdateEmployeeInput>,
     defaultValues: initialValues as unknown as UpdateEmployeeInput,
   });
 
