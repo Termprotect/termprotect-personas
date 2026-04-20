@@ -84,8 +84,6 @@ export async function POST(
         drivingLicenseExpiresAt: data.drivingLicenseExpiresAt
           ? new Date(data.drivingLicenseExpiresAt)
           : null,
-        capNumber: data.capNumber ?? null,
-        capExpiresAt: data.capExpiresAt ? new Date(data.capExpiresAt) : null,
 
         // Auth
         passwordHash,

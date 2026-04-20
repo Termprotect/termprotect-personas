@@ -44,7 +44,6 @@ export default function ActivarForm({
 
   const drivingSlots: DocumentSlot[] = [
     { kind: "PERMISO_CONDUCIR", label: "Permiso de conducir", required: true },
-    { kind: "CAP", label: "CAP (Certificado de Aptitud Profesional)" },
   ];
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
@@ -160,7 +159,7 @@ export default function ActivarForm({
       </Section>
 
       {requiresDriving && (
-        <Section title="Permiso de conducir y CAP">
+        <Section title="Permiso de conducir">
           <p className="text-xs text-slate-500 mb-3">
             RRHH ha indicado que conduces vehículos de la empresa. Rellena estos campos.
           </p>
@@ -173,12 +172,6 @@ export default function ActivarForm({
             </Field>
             <Field label="Caducidad permiso" error={errors.drivingLicenseExpiresAt?.message}>
               <input type="date" {...register("drivingLicenseExpiresAt")} className={inputCls} />
-            </Field>
-            <Field label="Nº CAP" error={errors.capNumber?.message}>
-              <input type="text" {...register("capNumber")} className={inputCls} />
-            </Field>
-            <Field label="Caducidad CAP" error={errors.capExpiresAt?.message}>
-              <input type="date" {...register("capExpiresAt")} className={inputCls} />
             </Field>
           </div>
         </Section>

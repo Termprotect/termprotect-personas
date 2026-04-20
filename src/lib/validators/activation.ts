@@ -48,16 +48,6 @@ export const activationSchema = z.object({
     .string()
     .optional()
     .or(z.literal("").transform(() => undefined)),
-  capNumber: z
-    .string()
-    .trim()
-    .max(20)
-    .optional()
-    .or(z.literal("").transform(() => undefined)),
-  capExpiresAt: z
-    .string()
-    .optional()
-    .or(z.literal("").transform(() => undefined)),
 
   // Contraseña
   password: z
