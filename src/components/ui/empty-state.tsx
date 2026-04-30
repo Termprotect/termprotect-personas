@@ -28,13 +28,13 @@ export function EmptyState({
       {...props}
     >
       {icon ? (
-        <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center mb-3 text-slate-400">
+        <div className="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center mb-3 text-muted-foreground">
           {icon}
         </div>
       ) : null}
-      <p className="text-sm font-medium text-slate-700">{title}</p>
+      <p className="text-sm font-medium text-foreground">{title}</p>
       {description ? (
-        <p className="text-xs text-slate-500 mt-1 max-w-sm">{description}</p>
+        <p className="text-xs text-muted-foreground mt-1 max-w-sm">{description}</p>
       ) : null}
       {action ? <div className="mt-4">{action}</div> : null}
     </div>

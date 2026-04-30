@@ -1,17 +1,69 @@
+@import url("https://fonts.googleapis.com/css2?family=Satoshi:wght@500;700&family=DM+Sans:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
 @theme {
-  --color-primary: oklch(40% 0.18 250);
-  --color-primary-foreground: oklch(98% 0 0);
-  --color-secondary: oklch(96% 0.01 250);
-  --color-muted: oklch(96% 0.01 250);
-  --color-muted-foreground: oklch(55% 0.02 250);
-  --color-destructive: oklch(60% 0.22 25);
-  --color-border: oklch(91% 0.01 250);
-  --color-input: oklch(91% 0.01 250);
-  --color-background: oklch(100% 0 0);
-  --color-foreground: oklch(15% 0.02 250);
+  /* Primary Colors — Premium Black & Gold */
+  --color-primary: #1C1917;
+  --color-primary-foreground: #FAFAF9;
+  --color-accent: #A16207;
+  --color-accent-foreground: #FFFFFF;
+
+  /* Neutral Colors — Warm grays */
+  --color-secondary: #F5F5F4;
+  --color-secondary-foreground: #292524;
+  --color-muted: #E7E5E4;
+  --color-muted-foreground: #78716B;
+
+  /* Status Colors */
+  --color-success: #10B981;
+  --color-success-foreground: #FFFFFF;
+  --color-warning: #F59E0B;
+  --color-warning-foreground: #FFFFFF;
+  --color-destructive: #DC2626;
+  --color-destructive-foreground: #FFFFFF;
+  --color-info: #3B82F6;
+  --color-info-foreground: #FFFFFF;
+
+  /* Semantic Colors */
+  --color-border: #E7E5E4;
+  --color-input: #F5F5F4;
+  --color-background: #FAFAF9;
+  --color-foreground: #292524;
+
+  /* Fonts */
+  --font-heading: "Satoshi", system-ui, -apple-system, sans-serif;
+  --font-body: "DM Sans", system-ui, -apple-system, sans-serif;
+
   --radius: 0.5rem;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-primary: #FAFAF9;
+    --color-primary-foreground: #1C1917;
+    --color-accent: #FCD34D;
+    --color-accent-foreground: #1C1917;
+
+    --color-secondary: #292524;
+    --color-secondary-foreground: #F5F5F4;
+    --color-muted: #49433E;
+    --color-muted-foreground: #A8A29E;
+
+    --color-success: #059669;
+    --color-success-foreground: #F0FDF4;
+    --color-warning: #D97706;
+    --color-warning-foreground: #FFFBEB;
+    --color-destructive: #991B1B;
+    --color-destructive-foreground: #FEE2E2;
+    --color-info: #1D4ED8;
+    --color-info-foreground: #EFF6FF;
+
+    --color-border: #49433E;
+    --color-input: #292524;
+    --color-background: #1C1917;
+    --color-foreground: #F5F5F4;
+  }
 }
 
 *,
@@ -22,7 +74,20 @@
   border-color: var(--color-border);
 }
 
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.2;
 }

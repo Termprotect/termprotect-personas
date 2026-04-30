@@ -20,7 +20,7 @@ export function UrlTabs({ tabs, activeValue, className }: UrlTabsProps) {
       role="tablist"
       aria-orientation="horizontal"
       className={cn(
-        "flex gap-1 border-b border-slate-200 overflow-x-auto",
+        "flex gap-1 border-b border-border overflow-x-auto",
         className,
       )}
     >
@@ -36,8 +36,8 @@ export function UrlTabs({ tabs, activeValue, className }: UrlTabsProps) {
             className={cn(
               "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
               isActive
-                ? "border-blue-600 text-blue-700"
-                : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300",
+                ? "border-accent text-accent"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:border-border",
             )}
           >
             {t.label}
@@ -45,7 +45,7 @@ export function UrlTabs({ tabs, activeValue, className }: UrlTabsProps) {
               <span
                 className={cn(
                   "inline-flex items-center justify-center h-5 min-w-[20px] px-1 rounded-full text-[11px] font-medium",
-                  isActive ? "bg-blue-50 text-blue-700" : "bg-slate-100 text-slate-600",
+                  isActive ? "bg-accent/10 text-accent" : "bg-muted text-muted-foreground",
                 )}
               >
                 {t.badge}

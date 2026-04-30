@@ -45,15 +45,15 @@ export default function Sidebar({ role }: { role: string }) {
   const pathname = usePathname();
 
   return (
-    <aside className="w-56 bg-slate-900 flex flex-col h-full shrink-0">
+    <aside className="w-56 bg-primary flex flex-col h-full shrink-0">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-slate-700">
-        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-          <Shield className="w-4 h-4 text-white" />
+      <div className="flex items-center gap-3 px-5 py-5 border-b border-primary/20">
+        <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
+          <Shield className="w-4 h-4 text-accent-foreground" />
         </div>
         <div>
-          <p className="text-white text-sm font-semibold leading-none">Termprotect</p>
-          <p className="text-slate-400 text-xs leading-none mt-0.5">Personas</p>
+          <p className="text-primary-foreground text-sm font-semibold leading-none">Termprotect</p>
+          <p className="text-primary/50 text-xs leading-none mt-0.5">Personas</p>
         </div>
       </div>
 
@@ -71,8 +71,8 @@ export default function Sidebar({ role }: { role: string }) {
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-blue-600 text-white"
-                    : "text-slate-400 hover:text-white hover:bg-slate-800"
+                    ? "bg-accent text-accent-foreground"
+                    : "text-primary/60 hover:text-primary-foreground hover:bg-primary/10"
                 )}
               >
                 <Icon className="w-4 h-4 shrink-0" />
@@ -83,8 +83,8 @@ export default function Sidebar({ role }: { role: string }) {
       </nav>
 
       {/* Versión */}
-      <div className="px-5 py-3 border-t border-slate-700">
-        <p className="text-slate-500 text-xs">v1.0.0</p>
+      <div className="px-5 py-3 border-t border-primary/20">
+        <p className="text-primary/50 text-xs">v1.0.0</p>
       </div>
     </aside>
   );

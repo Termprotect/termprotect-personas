@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils";
 export type BadgeVariant = "neutral" | "info" | "success" | "warning" | "danger";
 
 const VARIANT_CLASSES: Record<BadgeVariant, string> = {
-  neutral: "bg-slate-100 text-slate-700",
-  info: "bg-blue-50 text-blue-700",
-  success: "bg-emerald-50 text-emerald-700",
-  warning: "bg-amber-50 text-amber-700",
-  danger: "bg-rose-50 text-rose-700",
+  neutral: "bg-muted text-foreground",
+  info: "bg-info text-info-foreground",
+  success: "bg-success text-success-foreground",
+  warning: "bg-warning text-warning-foreground",
+  danger: "bg-destructive text-destructive-foreground",
 };
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
