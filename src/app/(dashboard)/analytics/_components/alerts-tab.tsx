@@ -18,19 +18,19 @@ export async function AlertsTab({ scope }: AlertsTabProps) {
         <KpiCard
           title="Críticas"
           value={data.totalsByLevel.critical}
-          icon={<AlertCircle className="w-4 h-4 text-rose-600" />}
+          icon={<AlertCircle className="w-4 h-4 text-destructive" />}
           hint="Atención inmediata"
         />
         <KpiCard
           title="Atención"
           value={data.totalsByLevel.warning}
-          icon={<AlertTriangle className="w-4 h-4 text-amber-600" />}
+          icon={<AlertTriangle className="w-4 h-4 text-warning" />}
           hint="Revisar pronto"
         />
         <KpiCard
           title="Avisos"
           value={data.totalsByLevel.info}
-          icon={<Info className="w-4 h-4 text-blue-600" />}
+          icon={<Info className="w-4 h-4 text-primary" />}
           hint="Informativo"
         />
       </div>

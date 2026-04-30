@@ -37,9 +37,9 @@ export function AnalyticsFilters({
   };
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-3 flex flex-wrap items-center gap-3">
+    <div className="bg-background rounded-xl border border-border p-3 flex flex-wrap items-center gap-3">
       <div className="flex items-center gap-2">
-        <label htmlFor="period" className="text-xs font-medium text-slate-500">
+        <label htmlFor="period" className="text-xs font-medium text-muted-foreground">
           Periodo
         </label>
         <select
@@ -47,7 +47,7 @@ export function AnalyticsFilters({
           value={current.period}
           onChange={(e) => updateParam("period", e.target.value)}
           disabled={isPending}
-          className="text-sm rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+          className="text-sm rounded-lg border border-border bg-background px-3 py-1.5 text-foreground focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
         >
           {ANALYTICS_PERIODS.map((p) => (
             <option key={p} value={p}>
@@ -59,7 +59,7 @@ export function AnalyticsFilters({
 
       {showSedeSelector ? (
         <div className="flex items-center gap-2">
-          <label htmlFor="sedeId" className="text-xs font-medium text-slate-500">
+          <label htmlFor="sedeId" className="text-xs font-medium text-muted-foreground">
             Sede
           </label>
           <select
@@ -67,7 +67,7 @@ export function AnalyticsFilters({
             value={current.sedeId ?? ""}
             onChange={(e) => updateParam("sedeId", e.target.value || undefined)}
             disabled={isPending}
-            className="text-sm rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            className="text-sm rounded-lg border border-border bg-background px-3 py-1.5 text-foreground focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
           >
             <option value="">Todas las sedes</option>
             {sedes.map((s) => (
@@ -80,7 +80,7 @@ export function AnalyticsFilters({
       ) : null}
 
       {isPending ? (
-        <span className="text-xs text-slate-400 ml-auto">Actualizando...</span>
+        <span className="text-xs text-muted-foreground ml-auto">Actualizando...</span>
       ) : null}
     </div>
   );

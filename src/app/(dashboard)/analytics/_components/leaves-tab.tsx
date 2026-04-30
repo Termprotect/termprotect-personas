@@ -58,8 +58,8 @@ function LeavesTable({ rows, emptyTitle }: { rows: LeaveListItem[]; emptyTitle: 
   return (
     <div className="overflow-hidden">
       <table className="w-full text-sm">
-        <thead className="bg-slate-50 border-b border-slate-200">
-          <tr className="text-left text-slate-500 text-xs uppercase tracking-wider">
+        <thead className="bg-secondary border-b border-border">
+          <tr className="text-left text-muted-foreground text-xs uppercase tracking-wider">
             <th className="px-4 py-2.5 font-medium">Empleado</th>
             <th className="px-4 py-2.5 font-medium">Tipo</th>
             <th className="px-4 py-2.5 font-medium">Desde</th>
@@ -67,16 +67,16 @@ function LeavesTable({ rows, emptyTitle }: { rows: LeaveListItem[]; emptyTitle: 
             <th className="px-4 py-2.5 font-medium text-right">Días</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100">
+        <tbody className="divide-y divide-border">
           {rows.map((r) => (
-            <tr key={r.id} className="hover:bg-slate-50/60">
-              <td className="px-4 py-2.5 text-slate-800">{r.employeeName}</td>
-              <td className="px-4 py-2.5 text-slate-600">
+            <tr key={r.id} className="hover:bg-secondary/60">
+              <td className="px-4 py-2.5 text-foreground">{r.employeeName}</td>
+              <td className="px-4 py-2.5 text-muted-foreground">
                 {LEAVE_TYPE_LABELS[r.type] ?? r.type}
               </td>
-              <td className="px-4 py-2.5 text-slate-600">{formatDate(r.startDate)}</td>
-              <td className="px-4 py-2.5 text-slate-600">{formatDate(r.endDate)}</td>
-              <td className="px-4 py-2.5 text-right font-semibold text-slate-900">
+              <td className="px-4 py-2.5 text-muted-foreground">{formatDate(r.startDate)}</td>
+              <td className="px-4 py-2.5 text-muted-foreground">{formatDate(r.endDate)}</td>
+              <td className="px-4 py-2.5 text-right font-semibold text-foreground">
                 {r.totalDays}
               </td>
             </tr>
@@ -107,24 +107,24 @@ export async function LeavesTab({ scope, filters }: LeavesTabProps) {
             {consumption.totalDays > 0 ? (
               <div className="space-y-3">
                 <div className="flex items-baseline justify-between">
-                  <span className="text-3xl font-semibold text-slate-900">
+                  <span className="text-3xl font-semibold text-foreground">
                     {consumption.usedDays}
-                    <span className="text-lg text-slate-400 font-medium">
+                    <span className="text-lg text-muted-foreground font-medium">
                       {" / "}
                       {consumption.totalDays}
                     </span>
                   </span>
-                  <span className="text-sm text-slate-500">
+                  <span className="text-sm text-muted-foreground">
                     {consumptionPct.toFixed(0)}% consumido
                   </span>
                 </div>
-                <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+                <div className="h-2 rounded-full bg-muted overflow-hidden">
                   <div
-                    className="h-full bg-blue-600"
+                    className="h-full bg-primary"
                     style={{ width: `${Math.min(100, consumptionPct)}%` }}
                   />
                 </div>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   {consumption.pendingDays} días pendientes de aprobar
                 </p>
               </div>
@@ -183,7 +183,7 @@ export async function LeavesTab({ scope, filters }: LeavesTabProps) {
                 label: LEAVE_TYPE_LABELS[t.type] ?? t.type,
                 count: t.count,
               }))}
-              color="#0891b2"
+              color="#A16207"
               emptyTitle="Sin ausencias aprobadas"
               height={Math.max(220, data.byType.length * 32)}
             />

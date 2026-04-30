@@ -26,9 +26,9 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  PENDIENTE: "#f59e0b",
-  APROBADA: "#10b981",
-  RECHAZADA: "#ef4444",
+  PENDIENTE: "#F59E0B",
+  APROBADA: "#10B981",
+  RECHAZADA: "#DC2626",
   CANCELADA: "#94a3b8",
 };
 
@@ -36,7 +36,7 @@ export function LeavesStatusChart({ data, height = 240 }: LeavesStatusProps) {
   const enriched = data.map((d) => ({
     label: STATUS_LABELS[d.status] ?? d.status,
     count: d.count,
-    color: STATUS_COLORS[d.status] ?? "#2563eb",
+    color: STATUS_COLORS[d.status] ?? "#1C1917",
   }));
   const hasData = enriched.some((d) => d.count > 0);
 

@@ -39,20 +39,20 @@ export function AlertsList({ items, hideEmpty = false, compact = false }: Alerts
   return (
     <div className="overflow-hidden">
       <table className="w-full text-sm">
-        <thead className="bg-slate-50 border-b border-slate-200">
-          <tr className="text-left text-slate-500 text-xs uppercase tracking-wider">
+        <thead className="bg-secondary border-b border-border">
+          <tr className="text-left text-muted-foreground text-xs uppercase tracking-wider">
             <th className="px-4 py-2.5 font-medium">Categoría</th>
             <th className="px-4 py-2.5 font-medium">Alerta</th>
             <th className="px-4 py-2.5 font-medium text-right">Total</th>
             <th className="px-4 py-2.5 font-medium">Nivel</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100">
+        <tbody className="divide-y divide-border">
           {visible.map((it) => (
-            <tr key={it.id} className="hover:bg-slate-50/60">
-              <td className="px-4 py-2.5 text-slate-500 text-xs">{it.category}</td>
-              <td className="px-4 py-2.5 text-slate-800">{it.label}</td>
-              <td className="px-4 py-2.5 text-right font-semibold text-slate-900">
+            <tr key={it.id} className="hover:bg-secondary/60">
+              <td className="px-4 py-2.5 text-muted-foreground text-xs">{it.category}</td>
+              <td className="px-4 py-2.5 text-foreground">{it.label}</td>
+              <td className="px-4 py-2.5 text-right font-semibold text-foreground">
                 {it.count}
               </td>
               <td className="px-4 py-2.5">

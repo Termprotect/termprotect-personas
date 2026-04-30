@@ -57,37 +57,37 @@ export function KpiCard({
   return (
     <Card className={cn("flex flex-col p-5 gap-3", className)}>
       <div className="flex items-start justify-between">
-        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
           {title}
         </p>
-        {icon ? <div className="text-slate-400">{icon}</div> : null}
+        {icon ? <div className="text-muted-foreground">{icon}</div> : null}
       </div>
       <div className="flex flex-col gap-1">
-        <p className="text-3xl font-semibold text-slate-900 leading-none">
+        <p className="text-3xl font-semibold text-foreground leading-none">
           {formatted}
         </p>
         {showDelta ? (
           <div className="flex items-center gap-1 text-xs">
             {positive ? (
-              <ArrowUpRight className="w-3.5 h-3.5 text-emerald-600" />
+              <ArrowUpRight className="w-3.5 h-3.5 text-success" />
             ) : negative ? (
-              <ArrowDownRight className="w-3.5 h-3.5 text-rose-600" />
+              <ArrowDownRight className="w-3.5 h-3.5 text-destructive" />
             ) : null}
             <span
               className={cn(
                 "font-medium",
-                positive ? "text-emerald-700" : negative ? "text-rose-700" : "text-slate-500",
+                positive ? "text-success" : negative ? "text-destructive" : "text-muted-foreground",
               )}
             >
               {(delta as number) > 0 ? "+" : ""}
               {NUMBER_FMT.format(delta as number)}
             </span>
             {deltaLabel ? (
-              <span className="text-slate-500">· {deltaLabel}</span>
+              <span className="text-muted-foreground">· {deltaLabel}</span>
             ) : null}
           </div>
         ) : hint ? (
-          <p className="text-xs text-slate-500">{hint}</p>
+          <p className="text-xs text-muted-foreground">{hint}</p>
         ) : null}
       </div>
     </Card>

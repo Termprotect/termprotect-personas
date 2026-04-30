@@ -92,7 +92,7 @@ export async function WorkforceTab({ scope, filters }: WorkforceTabProps) {
             <DistributionBarChart
               layout="vertical"
               data={data.byDepartment.map((d) => ({ label: d.department, count: d.count }))}
-              color="#0891b2"
+              color="#A16207"
               emptyTitle="Sin departamentos registrados"
               height={Math.max(220, data.byDepartment.length * 28)}
             />
@@ -109,10 +109,10 @@ export async function WorkforceTab({ scope, filters }: WorkforceTabProps) {
             {data.ageDistribution ? (
               <DistributionBarChart
                 data={data.ageDistribution.map((a) => ({ label: a.bucket, count: a.count }))}
-                color="#7c3aed"
+                color="#78716B"
               />
             ) : (
-              <div className="text-sm text-slate-500 py-6 text-center">
+              <div className="text-sm text-muted-foreground py-6 text-center">
                 Sin datos suficientes de fecha de nacimiento
               </div>
             )}

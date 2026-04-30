@@ -1,6 +1,7 @@
 "use client";
 
 import { LogOut, User } from "lucide-react";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 const roleLabelMap: Record<string, string> = {
   ADMIN: "Administrador",
@@ -37,6 +38,8 @@ export default function Topbar({
         <div className="w-8 h-8 bg-info/10 rounded-full flex items-center justify-center">
           <User className="w-4 h-4 text-info" />
         </div>
+
+        <ThemeToggle />
 
         <button
           onClick={() => { window.location.href = "/api/auth/signout?callbackUrl=/login"; }}

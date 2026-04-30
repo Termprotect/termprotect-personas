@@ -44,16 +44,18 @@ function canSee(userRole: string, minRole: string): boolean {
 export default function Sidebar({ role }: { role: string }) {
   const pathname = usePathname();
 
+  // Sidebar always dark — uses stone palette (warm grays) + hardcoded gold accent
+  // so it stays consistent in both light and dark modes (decision: "Mantener oscuro")
   return (
-    <aside className="w-56 bg-primary flex flex-col h-full shrink-0">
+    <aside className="w-56 bg-stone-900 flex flex-col h-full shrink-0">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-primary/20">
-        <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-          <Shield className="w-4 h-4 text-accent-foreground" />
+      <div className="flex items-center gap-3 px-5 py-5 border-b border-stone-800">
+        <div className="w-8 h-8 bg-[#A16207] rounded-lg flex items-center justify-center">
+          <Shield className="w-4 h-4 text-white" />
         </div>
         <div>
-          <p className="text-primary-foreground text-sm font-semibold leading-none">Termprotect</p>
-          <p className="text-primary/50 text-xs leading-none mt-0.5">Personas</p>
+          <p className="text-stone-50 text-sm font-semibold leading-none">Termprotect</p>
+          <p className="text-stone-400 text-xs leading-none mt-0.5">Personas</p>
         </div>
       </div>
 
@@ -71,8 +73,8 @@ export default function Sidebar({ role }: { role: string }) {
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-accent text-accent-foreground"
-                    : "text-primary/60 hover:text-primary-foreground hover:bg-primary/10"
+                    ? "bg-[#A16207] text-white shadow-sm"
+                    : "text-stone-300 hover:text-stone-50 hover:bg-stone-800"
                 )}
               >
                 <Icon className="w-4 h-4 shrink-0" />
@@ -83,8 +85,8 @@ export default function Sidebar({ role }: { role: string }) {
       </nav>
 
       {/* Versión */}
-      <div className="px-5 py-3 border-t border-primary/20">
-        <p className="text-primary/50 text-xs">v1.0.0</p>
+      <div className="px-5 py-3 border-t border-stone-800">
+        <p className="text-stone-500 text-xs">v1.0.0</p>
       </div>
     </aside>
   );

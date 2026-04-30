@@ -1,69 +1,110 @@
+/* termprotect-personas — design system v1.1 (theme inline pattern) */
 @import url("https://fonts.googleapis.com/css2?family=Satoshi:wght@500;700&family=DM+Sans:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
-@theme {
-  /* Primary Colors — Premium Black & Gold */
-  --color-primary: #1C1917;
-  --color-primary-foreground: #FAFAF9;
-  --color-accent: #A16207;
-  --color-accent-foreground: #FFFFFF;
+/* Dark variant: enables `dark:` utility prefix when .dark class is on html or any ancestor */
+@custom-variant dark (&:where(.dark, .dark *));
 
-  /* Neutral Colors — Warm grays */
-  --color-secondary: #F5F5F4;
-  --color-secondary-foreground: #292524;
-  --color-muted: #E7E5E4;
-  --color-muted-foreground: #78716B;
+/*
+  Tailwind v4 dark-mode pattern (shadcn/ui style):
+  - @theme inline maps Tailwind utility tokens to LOCAL CSS variables (no value duplication).
+  - :root defines the LIGHT values.
+  - .dark overrides them at runtime.
+  This is the only pattern that allows runtime theme switching with @theme.
+*/
 
-  /* Status Colors */
-  --color-success: #10B981;
-  --color-success-foreground: #FFFFFF;
-  --color-warning: #F59E0B;
-  --color-warning-foreground: #FFFFFF;
-  --color-destructive: #DC2626;
-  --color-destructive-foreground: #FFFFFF;
-  --color-info: #3B82F6;
-  --color-info-foreground: #FFFFFF;
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
 
-  /* Semantic Colors */
-  --color-border: #E7E5E4;
-  --color-input: #F5F5F4;
-  --color-background: #FAFAF9;
-  --color-foreground: #292524;
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
 
-  /* Fonts */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
   --font-heading: "Satoshi", system-ui, -apple-system, sans-serif;
   --font-body: "DM Sans", system-ui, -apple-system, sans-serif;
 
   --radius: 0.5rem;
 }
 
-/* Dark Mode */
-@media (prefers-color-scheme: dark) {
-  @theme {
-    --color-primary: #FAFAF9;
-    --color-primary-foreground: #1C1917;
-    --color-accent: #FCD34D;
-    --color-accent-foreground: #1C1917;
+/* LIGHT MODE values (default) */
+:root {
+  --primary: #1C1917;
+  --primary-foreground: #FAFAF9;
+  --accent: #A16207;
+  --accent-foreground: #FFFFFF;
 
-    --color-secondary: #292524;
-    --color-secondary-foreground: #F5F5F4;
-    --color-muted: #49433E;
-    --color-muted-foreground: #A8A29E;
+  --secondary: #F5F5F4;
+  --secondary-foreground: #292524;
+  --muted: #E7E5E4;
+  --muted-foreground: #78716B;
 
-    --color-success: #059669;
-    --color-success-foreground: #F0FDF4;
-    --color-warning: #D97706;
-    --color-warning-foreground: #FFFBEB;
-    --color-destructive: #991B1B;
-    --color-destructive-foreground: #FEE2E2;
-    --color-info: #1D4ED8;
-    --color-info-foreground: #EFF6FF;
+  --success: #10B981;
+  --success-foreground: #FFFFFF;
+  --warning: #F59E0B;
+  --warning-foreground: #FFFFFF;
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+  --info: #3B82F6;
+  --info-foreground: #FFFFFF;
 
-    --color-border: #49433E;
-    --color-input: #292524;
-    --color-background: #1C1917;
-    --color-foreground: #F5F5F4;
-  }
+  --border: #E7E5E4;
+  --input: #F5F5F4;
+  --background: #FAFAF9;
+  --foreground: #292524;
+
+  color-scheme: light;
+}
+
+/* DARK MODE overrides — activated by adding .dark on <html> */
+.dark {
+  --primary: #FAFAF9;
+  --primary-foreground: #1C1917;
+  --accent: #FCD34D;
+  --accent-foreground: #1C1917;
+
+  --secondary: #292524;
+  --secondary-foreground: #F5F5F4;
+  --muted: #44403C;
+  --muted-foreground: #A8A29E;
+
+  --success: #34D399;
+  --success-foreground: #064E3B;
+  --warning: #FBBF24;
+  --warning-foreground: #422006;
+  --destructive: #F87171;
+  --destructive-foreground: #450A0A;
+  --info: #60A5FA;
+  --info-foreground: #1E3A8A;
+
+  --border: #44403C;
+  --input: #292524;
+  --background: #1C1917;
+  --foreground: #F5F5F4;
+
+  color-scheme: dark;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 *,
@@ -74,16 +115,12 @@
   border-color: var(--color-border);
 }
 
-html {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-body);
   line-height: 1.6;
+  transition: background-color 200ms ease, color 200ms ease;
 }
 
 h1, h2, h3, h4, h5, h6 {

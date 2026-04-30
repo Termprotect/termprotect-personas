@@ -15,7 +15,7 @@ interface SedeDistributionProps {
   height?: number;
 }
 
-const COLORS = ["#2563eb", "#0891b2", "#7c3aed", "#f59e0b", "#10b981", "#ec4899"];
+const COLORS = ["#1C1917", "#A16207", "#78716B", "#10B981", "#3B82F6"];
 
 export function SedeDistributionChart({ data, height = 240 }: SedeDistributionProps) {
   const total = data.reduce((acc, d) => acc + d.count, 0);
@@ -69,11 +69,11 @@ export function SedeDistributionChart({ data, height = 240 }: SedeDistributionPr
                 className="inline-block w-2.5 h-2.5 rounded-sm shrink-0"
                 style={{ background: COLORS[i % COLORS.length] }}
               />
-              <span className="text-slate-700 truncate">{d.sedeName}</span>
+              <span className="text-foreground truncate">{d.sedeName}</span>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <span className="font-semibold text-slate-900">{d.count}</span>
-              <span className="text-xs text-slate-500">{d.percent.toFixed(0)}%</span>
+              <span className="font-semibold text-foreground">{d.count}</span>
+              <span className="text-xs text-muted-foreground">{d.percent.toFixed(0)}%</span>
             </div>
           </li>
         ))}

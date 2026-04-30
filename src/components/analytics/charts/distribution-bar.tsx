@@ -24,7 +24,7 @@ export function DistributionBarChart({
   data,
   height = 240,
   layout = "horizontal",
-  color = "#2563eb",
+  color = "#1C1917",
   emptyTitle = "Sin datos",
 }: DistributionBarProps) {
   const hasData = data.some((d) => d.count > 0);

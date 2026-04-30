@@ -57,9 +57,9 @@ export function HeadcountTrendChart({ data, height = 240 }: HeadcountTrendProps)
           <Line
             type="monotone"
             dataKey="count"
-            stroke="#2563eb"
+            stroke="#1C1917"
             strokeWidth={2}
-            dot={{ r: 3, fill: "#2563eb", stroke: "#fff", strokeWidth: 1 }}
+            dot={{ r: 3, fill: "#1C1917", stroke: "#fff", strokeWidth: 1 }}
             activeDot={{ r: 5 }}
             name="Plantilla activa"
           />

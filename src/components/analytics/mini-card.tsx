@@ -18,11 +18,11 @@ export function MiniCard({ label, value, hint, className }: MiniCardProps) {
 
   return (
     <Card className={cn("p-4", className)}>
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
-      <p className="text-xl font-semibold text-slate-800 mt-2">{display}</p>
-      {hint ? <p className="text-xs text-slate-500 mt-0.5">{hint}</p> : null}
+      <p className="text-xl font-semibold text-foreground mt-2">{display}</p>
+      {hint ? <p className="text-xs text-muted-foreground mt-0.5">{hint}</p> : null}
     </Card>
   );
 }
