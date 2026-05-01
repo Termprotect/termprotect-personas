@@ -1,14 +1,20 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Compat-style Badge — kept for legacy callers. New code should prefer <Tag>
+ * from "./tag" which matches the handoff spec exactly. Variants here map
+ * onto the new token set.
+ */
+
 export type BadgeVariant = "neutral" | "info" | "success" | "warning" | "danger";
 
 const VARIANT_CLASSES: Record<BadgeVariant, string> = {
-  neutral: "bg-muted text-foreground",
-  info: "bg-info text-info-foreground",
-  success: "bg-success text-success-foreground",
-  warning: "bg-warning text-warning-foreground",
-  danger: "bg-destructive text-destructive-foreground",
+  neutral: "bg-line text-ink-2",
+  info: "bg-accent/15 text-accent",
+  success: "bg-good/15 text-good",
+  warning: "bg-warn/15 text-warn",
+  danger: "bg-bad/15 text-bad",
 };
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {

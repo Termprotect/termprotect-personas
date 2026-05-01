@@ -1,26 +1,19 @@
-const statusConfig: Record<
-  string,
-  { label: string; bg: string; text: string }
-> = {
-  INVITADO: { label: "Invitado", bg: "bg-amber-50", text: "text-amber-700" },
-  ACTIVE: { label: "Activo", bg: "bg-emerald-50", text: "text-emerald-700" },
-  BAJA_MEDICA: { label: "Baja médica", bg: "bg-orange-50", text: "text-orange-700" },
-  EXCEDENCIA: { label: "Excedencia", bg: "bg-sky-50", text: "text-sky-700" },
-  BAJA_VOLUNTARIA: { label: "Baja voluntaria", bg: "bg-slate-100", text: "text-slate-600" },
-  DESPIDO: { label: "Despido", bg: "bg-rose-50", text: "text-rose-700" },
+import { Tag, type TagVariant } from "@/components/ui/tag";
+
+const STATUS_CFG: Record<string, { label: string; variant: TagVariant }> = {
+  INVITADO:        { label: "Invitado",        variant: "info"    },
+  ACTIVE:          { label: "Activo",          variant: "good"    },
+  BAJA_MEDICA:     { label: "Baja médica",     variant: "warn"    },
+  EXCEDENCIA:      { label: "Excedencia",      variant: "info"    },
+  BAJA_VOLUNTARIA: { label: "Baja voluntaria", variant: "neutral" },
+  DESPIDO:         { label: "Despido",         variant: "bad"     },
 };
 
 export default function StatusBadge({ status }: { status: string }) {
-  const cfg = statusConfig[status] ?? {
-    label: status,
-    bg: "bg-slate-100",
-    text: "text-slate-600",
-  };
+  const cfg = STATUS_CFG[status] ?? { label: status, variant: "neutral" as TagVariant };
   return (
-    <span
-      className={`inline-flex items-center text-xs font-medium px-2 py-1 rounded-md ${cfg.bg} ${cfg.text}`}
-    >
+    <Tag variant={cfg.variant} dot>
       {cfg.label}
-    </span>
+    </Tag>
   );
 }

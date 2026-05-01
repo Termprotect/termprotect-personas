@@ -1,28 +1,30 @@
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import * as React from "react";
+import { MiniKpi } from "@/components/ui/mini-kpi";
 
 interface MiniCardProps {
   label: string;
   value: string | number | null;
   hint?: string;
+  meta?: React.ReactNode;
   className?: string;
+  valueClassName?: string;
 }
 
 const NUMBER_FMT = new Intl.NumberFormat("es-ES");
 
-export function MiniCard({ label, value, hint, className }: MiniCardProps) {
-  let display: string;
+export function MiniCard({ label, value, hint, meta, className, valueClassName }: MiniCardProps) {
+  let display: React.ReactNode;
   if (value === null || value === undefined) display = "—";
   else if (typeof value === "number") display = NUMBER_FMT.format(value);
   else display = value;
 
   return (
-    <Card className={cn("p-4", className)}>
-      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-        {label}
-      </p>
-      <p className="text-xl font-semibold text-foreground mt-2">{display}</p>
-      {hint ? <p className="text-xs text-muted-foreground mt-0.5">{hint}</p> : null}
-    </Card>
+    <MiniKpi
+      label={label}
+      value={display}
+      meta={meta ?? hint}
+      className={className}
+      valueClassName={valueClassName}
+    />
   );
 }

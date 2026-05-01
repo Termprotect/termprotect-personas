@@ -60,7 +60,7 @@ export default async function EditarEmpleadoPage({
       where: {
         status: "ACTIVE",
         role: { in: ["MANAGER", "RRHH", "ADMIN"] },
-        id: { not: id }, // no puede reportarse a sí mismo
+        id: { not: id },
       },
       orderBy: [{ apellidos: "asc" }, { nombres: "asc" }],
       select: {
@@ -110,15 +110,15 @@ export default async function EditarEmpleadoPage({
       <div>
         <Link
           href={`/empleados/${id}`}
-          className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 transition-colors mb-3"
+          className="inline-flex items-center gap-1 text-[12px] text-ink-3 hover:text-ink transition-colors mb-3 font-mono uppercase tracking-[0.04em]"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-3.5 h-3.5" />
           Volver a la ficha
         </Link>
-        <h1 className="text-2xl font-bold text-slate-800">
+        <h1 className="text-[24px] font-semibold text-ink tracking-[-0.01em]">
           Editar: {employee.nombres} {employee.apellidos}
         </h1>
-        <p className="text-slate-500 text-sm mt-1">
+        <p className="text-ink-3 text-[12.5px] mt-1">
           {employee.documentType} {employee.documentNumber} · los cambios en campos
           laborales quedan registrados en el historial.
         </p>

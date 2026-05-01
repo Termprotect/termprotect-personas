@@ -1,54 +1,69 @@
 "use client";
 
-import { LogOut, User } from "lucide-react";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { Bell, LogOut, User } from "lucide-react";
+import { Breadcrumbs } from "./breadcrumbs";
+import { SearchBar } from "./search-bar";
+import { Pulse } from "./pulse";
+import { DayNightSwitch } from "./day-night-switch";
 
-const roleLabelMap: Record<string, string> = {
-  ADMIN: "Administrador",
-  RRHH: "RRHH",
-  MANAGER: "Manager",
-  EMPLEADO: "Empleado",
-};
-
-export default function Topbar({
-  nombres,
-  apellidos,
-  role,
-}: {
+interface TopbarProps {
   nombres: string;
   apellidos: string;
   role: string;
-}) {
+}
+
+export default function Topbar({ nombres, apellidos, role }: TopbarProps) {
+  void role;
   return (
-    <header className="h-14 bg-background border-b border-border flex items-center justify-between px-6 shrink-0">
-      {/* Espacio izquierdo (puede usarse para breadcrumbs en el futuro) */}
-      <div />
+    <header
+      className="sticky top-0 z-20 h-14 border-b border-line-2 backdrop-blur"
+      style={{
+        background: "color-mix(in srgb, var(--bg) 86%, transparent)",
+      }}
+    >
+      <div className="h-full flex items-center gap-4 px-5">
+        <Breadcrumbs />
 
-      {/* Usuario y menú */}
-      <div className="flex items-center gap-3">
-        <div className="text-right">
-          <p className="text-sm font-medium text-foreground leading-none">
-            {nombres} {apellidos}
-          </p>
-          <p className="text-xs text-muted-foreground leading-none mt-0.5">
-            {roleLabelMap[role] ?? role}
-          </p>
+        <div className="ml-2">
+          <SearchBar />
         </div>
 
-        <div className="w-8 h-8 bg-info/10 rounded-full flex items-center justify-center">
-          <User className="w-4 h-4 text-info" />
-        </div>
+        <div className="flex-1" />
 
-        <ThemeToggle />
+        <Pulse />
 
         <button
-          onClick={() => { window.location.href = "/api/auth/signout?callbackUrl=/login"; }}
-          className="w-8 h-8 flex items-center justify-center rounded-lg
-                     text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-          title="Cerrar sesión"
+          type="button"
+          className="relative w-8 h-8 flex items-center justify-center rounded-lg text-ink-3 hover:text-ink hover:bg-line transition-colors"
+          aria-label="Notificaciones"
+          title="Notificaciones"
         >
-          <LogOut className="w-4 h-4" />
+          <Bell className="w-[15px] h-[15px]" />
         </button>
+
+        <DayNightSwitch />
+
+        <div className="flex items-center gap-2 pl-2 border-l border-line-2">
+          <div className="text-right">
+            <div className="text-[12px] font-medium leading-none text-ink">
+              {nombres} {apellidos}
+            </div>
+          </div>
+          <div className="w-8 h-8 flex items-center justify-center rounded-full bg-accent/15">
+            <User className="w-4 h-4 text-accent" aria-hidden />
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              window.location.href = "/api/auth/signout?callbackUrl=/login";
+            }}
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-ink-3 hover:text-bad hover:bg-bad/10 transition-colors"
+            aria-label="Cerrar sesión"
+            title="Cerrar sesión"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        </div>
       </div>
     </header>
   );

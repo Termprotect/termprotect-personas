@@ -10,7 +10,7 @@ import {
 } from "@/lib/validators/analytics";
 import { buildEmployeeScope } from "@/lib/services/analytics/scope";
 
-import { SectionHeader } from "@/components/ui/section-header";
+import { PageHeader } from "@/components/ui/page-header";
 import { UrlTabs, type UrlTabItem } from "@/components/ui/url-tabs";
 import { AnalyticsFilters } from "@/components/analytics/analytics-filters";
 
@@ -24,6 +24,21 @@ export const dynamic = "force-dynamic";
 interface PageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
+
+const MONTH_LABELS_ES = [
+  "enero",
+  "febrero",
+  "marzo",
+  "abril",
+  "mayo",
+  "junio",
+  "julio",
+  "agosto",
+  "septiembre",
+  "octubre",
+  "noviembre",
+  "diciembre",
+];
 
 function buildTabHref(currentParams: URLSearchParams, tab: AnalyticsTabKey): string {
   const next = new URLSearchParams(currentParams);
@@ -47,9 +62,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps) {
     else if (typeof v === "string") flat[k] = v;
   }
   const parsed = analyticsFiltersSchema.safeParse(flat);
-  const filters = parsed.success
-    ? parsed.data
-    : analyticsFiltersSchema.parse({});
+  const filters = parsed.success ? parsed.data : analyticsFiltersSchema.parse({});
 
   const sedes = await db.sede.findMany({
     select: { id: true, name: true },
@@ -72,11 +85,21 @@ export default async function AnalyticsPage({ searchParams }: PageProps) {
     href: buildTabHref(baseParams, tab),
   }));
 
+  const now = new Date();
+  const monthLabel = `${MONTH_LABELS_ES[now.getMonth()]} ${now.getFullYear()}`;
+  const sedeLabel = filters.sedeId
+    ? sedes.find((s) => s.id === filters.sedeId)?.name ?? "sede"
+    : "todas las sedes";
+
   return (
     <div className="space-y-6">
-      <SectionHeader
-        title="People Analytics"
-        description="Indicadores clave de gestión de personas"
+      <PageHeader
+        title={
+          <>
+            Analytics <em>de personas</em>
+          </>
+        }
+        sub={`Visión ejecutiva · ${sedeLabel} · ${monthLabel}`}
       />
 
       <AnalyticsFilters

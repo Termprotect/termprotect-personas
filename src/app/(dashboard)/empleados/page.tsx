@@ -1,22 +1,49 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Plus, User } from "lucide-react";
+import { Plus } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import type { Prisma } from "@prisma/client";
 import EmpleadosFilters from "./EmpleadosFilters";
 import StatusBadge from "./StatusBadge";
 
+import { PageHeader } from "@/components/ui/page-header";
+import { Card } from "@/components/ui/card";
+import { MiniKpiStrip } from "@/components/ui/mini-kpi";
+import { MiniCard } from "@/components/analytics/mini-card";
+import { Avatar } from "@/components/ui/avatar";
+import { Tag } from "@/components/ui/tag";
+import { Button } from "@/components/ui/button";
+import {
+  Tbl,
+  TblBody,
+  TblCell,
+  TblHead,
+  TblHeadCell,
+  TblHeadRow,
+  TblRow,
+} from "@/components/ui/tbl";
+
 export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 20;
 
-const roleLabel: Record<string, string> = {
+const ROLE_LABEL: Record<string, string> = {
   ADMIN: "Administrador",
   RRHH: "RRHH",
   MANAGER: "Manager",
   EMPLEADO: "Empleado",
 };
+
+function avgYears(startDates: (Date | null)[], now: Date): number | null {
+  const ms = startDates.reduce((acc, d) => {
+    if (!d) return acc;
+    return acc + (now.getTime() - d.getTime());
+  }, 0);
+  const n = startDates.filter((d) => d !== null).length;
+  if (n === 0) return null;
+  return Math.round((ms / n / (1000 * 60 * 60 * 24 * 365.25)) * 10) / 10;
+}
 
 export default async function EmpleadosPage({
   searchParams,
@@ -52,7 +79,20 @@ export default async function EmpleadosPage({
   if (estadoFilter) where.status = estadoFilter as Prisma.EmployeeWhereInput["status"];
   if (rolFilter) where.role = rolFilter as Prisma.EmployeeWhereInput["role"];
 
-  const [sedes, total, employees] = await Promise.all([
+  const now = new Date();
+  const in30 = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+  const [
+    sedes,
+    total,
+    employees,
+    countActivos,
+    countIT,
+    countPrueba,
+    countIndefinidos,
+    activeStartDates,
+    departmentsDistinct,
+  ] = await Promise.all([
     db.sede.findMany({ orderBy: { name: "asc" } }),
     db.employee.count({ where }),
     db.employee.findMany({
@@ -62,126 +102,169 @@ export default async function EmpleadosPage({
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
     }),
+    db.employee.count({ where: { status: "ACTIVE" } }),
+    db.employee.count({ where: { status: "BAJA_MEDICA" } }),
+    db.employee.count({
+      where: { status: "ACTIVE", trialEndDate: { gte: now, lte: in30 } },
+    }),
+    db.employee.count({ where: { status: "ACTIVE", contractType: "INDEFINIDO" } }),
+    db.employee.findMany({
+      where: { status: "ACTIVE", startDate: { not: null } },
+      select: { startDate: true },
+    }),
+    db.employee.findMany({
+      where: { status: "ACTIVE", department: { not: null } },
+      select: { department: true },
+      distinct: ["department"],
+    }),
   ]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const antiguedadMedia = avgYears(
+    activeStartDates.map((e) => e.startDate),
+    now,
+  );
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800">Empleados</h1>
-          <p className="text-slate-500 text-sm mt-1">
-            {total} {total === 1 ? "empleado" : "empleados"} en total
-          </p>
-        </div>
-        {canCreate && (
-          <Link
-            href="/empleados/nuevo"
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Nuevo empleado
-          </Link>
-        )}
-      </div>
+    <div className="space-y-5">
+      <PageHeader
+        title="Empleados"
+        sub={`${total} ${total === 1 ? "resultado" : "resultados"} · ${sedes.length} sedes · ${departmentsDistinct.length} departamentos`}
+        actions={
+          canCreate ? (
+            <Button asChild variant="primary">
+              <Link href="/empleados/nuevo">
+                <Plus className="w-3.5 h-3.5" /> Nuevo
+              </Link>
+            </Button>
+          ) : null
+        }
+      />
+
+      <Card>
+        <MiniKpiStrip cols={5}>
+          <MiniCard label="Activos" value={countActivos} meta="Plantilla actual" />
+          <MiniCard label="En IT" value={countIT} meta="Baja médica activa" />
+          <MiniCard
+            label="Período prueba"
+            value={countPrueba}
+            meta="Vencen en 30d"
+          />
+          <MiniCard
+            label="Indefinidos"
+            value={countIndefinidos}
+            meta="Contrato fijo"
+          />
+          <MiniCard
+            label="Antig. media"
+            value={antiguedadMedia !== null ? `${antiguedadMedia}` : "—"}
+            meta="años en activos"
+          />
+        </MiniKpiStrip>
+      </Card>
 
       <EmpleadosFilters sedes={sedes} />
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <Card className="overflow-hidden">
         {employees.length === 0 ? (
           <div className="p-12 text-center">
-            <p className="text-slate-600 font-medium">Sin resultados</p>
-            <p className="text-slate-400 text-sm mt-1">
+            <p className="text-ink font-medium text-[14px]">Sin resultados</p>
+            <p className="text-ink-3 text-[12px] mt-1">
               Ajusta los filtros o crea un nuevo empleado.
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-slate-50 border-b border-slate-200">
-                <tr className="text-left text-slate-500 text-xs uppercase tracking-wider">
-                  <th className="px-4 py-3 font-medium">Empleado</th>
-                  <th className="px-4 py-3 font-medium">Documento</th>
-                  <th className="px-4 py-3 font-medium">Sede</th>
-                  <th className="px-4 py-3 font-medium">Cargo</th>
-                  <th className="px-4 py-3 font-medium">Rol</th>
-                  <th className="px-4 py-3 font-medium">Estado</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {employees.map((e) => (
-                  <tr key={e.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-4 py-3">
-                      <Link href={`/empleados/${e.id}`} className="flex items-center gap-3 group">
-                        <div className="w-9 h-9 rounded-full bg-slate-100 overflow-hidden flex items-center justify-center shrink-0">
-                          {e.photoUrl ? (
+          <Tbl containerClassName="border-0 shadow-none rounded-none">
+            <TblHead>
+              <TblHeadRow>
+                <TblHeadCell>Empleado</TblHeadCell>
+                <TblHeadCell>Documento</TblHeadCell>
+                <TblHeadCell>Sede</TblHeadCell>
+                <TblHeadCell>Cargo</TblHeadCell>
+                <TblHeadCell>Rol</TblHeadCell>
+                <TblHeadCell>Estado</TblHeadCell>
+              </TblHeadRow>
+            </TblHead>
+            <TblBody>
+              {employees.map((e) => {
+                const fullName = `${e.apellidos}, ${e.nombres}`;
+                return (
+                  <TblRow key={e.id} interactive>
+                    <TblCell className="py-2">
+                      <Link
+                        href={`/empleados/${e.id}`}
+                        className="flex items-center gap-2.5 group"
+                      >
+                        {e.photoUrl ? (
+                          <span className="inline-block w-7 h-7 rounded-full overflow-hidden bg-line-2 shrink-0">
                             <Image
                               src={e.photoUrl}
-                              alt={`${e.nombres} ${e.apellidos}`}
-                              width={36}
-                              height={36}
+                              alt={fullName}
+                              width={28}
+                              height={28}
                               className="w-full h-full object-cover"
                             />
-                          ) : (
-                            <User className="w-4 h-4 text-slate-400" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-medium text-slate-800 group-hover:text-blue-600 transition-colors">
-                            {e.apellidos}, {e.nombres}
-                          </p>
-                          {e.email && (
-                            <p className="text-xs text-slate-500">{e.email}</p>
-                          )}
-                        </div>
+                          </span>
+                        ) : (
+                          <Avatar name={`${e.nombres} ${e.apellidos}`} size="lg" />
+                        )}
+                        <span className="flex flex-col min-w-0">
+                          <span className="text-[13px] font-medium text-ink group-hover:text-accent transition-colors truncate">
+                            {fullName}
+                          </span>
+                          {e.email ? (
+                            <span className="text-[11px] text-ink-3 font-mono truncate">
+                              {e.email}
+                            </span>
+                          ) : null}
+                        </span>
                       </Link>
-                    </td>
-                    <td className="px-4 py-3 text-slate-600">
-                      <span className="font-mono text-xs">{e.documentNumber}</span>
-                      <p className="text-xs text-slate-400">{e.documentType}</p>
-                    </td>
-                    <td className="px-4 py-3 text-slate-600">{e.sede.name}</td>
-                    <td className="px-4 py-3 text-slate-600">
-                      {e.position ?? <span className="text-slate-300">—</span>}
-                    </td>
-                    <td className="px-4 py-3 text-slate-600">{roleLabel[e.role] ?? e.role}</td>
-                    <td className="px-4 py-3">
+                    </TblCell>
+                    <TblCell idCell>
+                      {e.documentNumber}
+                      <span className="block text-[10px] text-ink-4">
+                        {e.documentType}
+                      </span>
+                    </TblCell>
+                    <TblCell>
+                      <Tag>{e.sede.name.slice(0, 3).toUpperCase()}</Tag>
+                    </TblCell>
+                    <TblCell>
+                      {e.position ?? <span className="text-ink-4">—</span>}
+                    </TblCell>
+                    <TblCell className="text-ink-2">
+                      {ROLE_LABEL[e.role] ?? e.role}
+                    </TblCell>
+                    <TblCell>
                       <StatusBadge status={e.status} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </TblCell>
+                  </TblRow>
+                );
+              })}
+            </TblBody>
+          </Tbl>
         )}
-      </div>
+      </Card>
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm">
-          <p className="text-slate-500">
+      {totalPages > 1 ? (
+        <div className="flex items-center justify-between text-[12px]">
+          <p className="text-ink-3 font-mono uppercase tracking-[0.04em]">
             Página {page} de {totalPages}
           </p>
           <div className="flex gap-2">
-            {page > 1 && (
-              <Link
-                href={buildHref(sp, page - 1)}
-                className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                Anterior
-              </Link>
-            )}
-            {page < totalPages && (
-              <Link
-                href={buildHref(sp, page + 1)}
-                className="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                Siguiente
-              </Link>
-            )}
+            {page > 1 ? (
+              <Button asChild variant="default" size="sm">
+                <Link href={buildHref(sp, page - 1)}>Anterior</Link>
+              </Button>
+            ) : null}
+            {page < totalPages ? (
+              <Button asChild variant="default" size="sm">
+                <Link href={buildHref(sp, page + 1)}>Siguiente</Link>
+              </Button>
+            ) : null}
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

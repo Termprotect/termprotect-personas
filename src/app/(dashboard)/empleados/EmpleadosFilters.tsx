@@ -28,7 +28,6 @@ export default function EmpleadosFilters({ sedes }: { sedes: Sede[] }) {
     });
   };
 
-  // Debounce de la búsqueda
   useEffect(() => {
     const t = setTimeout(() => {
       if (q !== (searchParams.get("q") ?? "")) updateParams({ q });
@@ -39,24 +38,31 @@ export default function EmpleadosFilters({ sedes }: { sedes: Sede[] }) {
 
   const hasFilters = q || sede || estado || rol;
 
+  const selectCls =
+    "h-8 px-3 border border-line-2 rounded-lg text-[12.5px] bg-surface text-ink focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-colors";
+
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-3">
-      <div className="flex flex-wrap gap-3">
-        <div className="relative flex-1 min-w-[220px]">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+    <div className="rounded-xl border border-line-2 bg-surface shadow-sm p-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative flex-1 min-w-[260px]">
+          <Search
+            className="w-3.5 h-3.5 text-ink-3 absolute left-3 top-1/2 -translate-y-1/2"
+            aria-hidden
+          />
           <input
             type="text"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Buscar por nombre, apellido, DNI o email..."
-            className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            placeholder="Buscar nombre, apellido, DNI o email…"
+            className="w-full h-8 pl-9 pr-3 rounded-lg border border-line-2 bg-surface text-[12.5px] text-ink placeholder:text-ink-3 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 transition-colors"
           />
         </div>
 
         <select
           value={sede}
           onChange={(e) => updateParams({ sede: e.target.value })}
-          className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
+          className={selectCls}
+          aria-label="Sede"
         >
           <option value="">Todas las sedes</option>
           {sedes.map((s) => (
@@ -69,7 +75,8 @@ export default function EmpleadosFilters({ sedes }: { sedes: Sede[] }) {
         <select
           value={estado}
           onChange={(e) => updateParams({ estado: e.target.value })}
-          className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
+          className={selectCls}
+          aria-label="Estado"
         >
           <option value="">Todos los estados</option>
           <option value="INVITADO">Invitado</option>
@@ -83,7 +90,8 @@ export default function EmpleadosFilters({ sedes }: { sedes: Sede[] }) {
         <select
           value={rol}
           onChange={(e) => updateParams({ rol: e.target.value })}
-          className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
+          className={selectCls}
+          aria-label="Rol"
         >
           <option value="">Todos los roles</option>
           <option value="ADMIN">Administrador</option>
@@ -92,19 +100,19 @@ export default function EmpleadosFilters({ sedes }: { sedes: Sede[] }) {
           <option value="EMPLEADO">Empleado</option>
         </select>
 
-        {hasFilters && (
+        {hasFilters ? (
           <button
             type="button"
             onClick={() => {
               setQ("");
               startTransition(() => router.push("/empleados"));
             }}
-            className="inline-flex items-center gap-1 px-3 py-2 text-sm text-slate-500 hover:text-slate-700 transition-colors"
+            className="inline-flex items-center gap-1 h-8 px-2.5 text-[12px] text-ink-3 hover:text-ink hover:bg-line transition-colors rounded-md"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" aria-hidden />
             Limpiar
           </button>
-        )}
+        ) : null}
       </div>
     </div>
   );

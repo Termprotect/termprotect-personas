@@ -1,11 +1,11 @@
-import { Badge, type BadgeVariant } from "@/components/ui/badge";
+import { Tag, type TagVariant } from "@/components/ui/tag";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ShieldCheck } from "lucide-react";
 import type { AlertItem } from "@/lib/services/analytics/alerts";
 
-const SEVERITY_VARIANT: Record<AlertItem["severity"], BadgeVariant> = {
-  critical: "danger",
-  warning: "warning",
+const SEVERITY_VARIANT: Record<AlertItem["severity"], TagVariant> = {
+  critical: "bad",
+  warning: "warn",
   info: "info",
 };
 
@@ -37,33 +37,27 @@ export function AlertsList({ items, hideEmpty = false, compact = false }: Alerts
   }
 
   return (
-    <div className="overflow-hidden">
-      <table className="w-full text-sm">
-        <thead className="bg-secondary border-b border-border">
-          <tr className="text-left text-muted-foreground text-xs uppercase tracking-wider">
-            <th className="px-4 py-2.5 font-medium">Categoría</th>
-            <th className="px-4 py-2.5 font-medium">Alerta</th>
-            <th className="px-4 py-2.5 font-medium text-right">Total</th>
-            <th className="px-4 py-2.5 font-medium">Nivel</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border">
-          {visible.map((it) => (
-            <tr key={it.id} className="hover:bg-secondary/60">
-              <td className="px-4 py-2.5 text-muted-foreground text-xs">{it.category}</td>
-              <td className="px-4 py-2.5 text-foreground">{it.label}</td>
-              <td className="px-4 py-2.5 text-right font-semibold text-foreground">
-                {it.count}
-              </td>
-              <td className="px-4 py-2.5">
-                <Badge variant={SEVERITY_VARIANT[it.severity]}>
-                  {SEVERITY_LABEL[it.severity]}
-                </Badge>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <ul className="flex flex-col">
+      {visible.map((it) => (
+        <li
+          key={it.id}
+          className="grid items-center gap-3 py-2.5 border-b border-line last:border-b-0"
+          style={{ gridTemplateColumns: "1fr auto auto" }}
+        >
+          <div className="min-w-0">
+            <div className="text-[12.5px] text-ink truncate">{it.label}</div>
+            <div className="text-[10.5px] font-mono uppercase tracking-[0.04em] text-ink-3 mt-0.5">
+              {it.category}
+            </div>
+          </div>
+          <div className="font-mono text-[14px] tabular-nums font-semibold text-ink">
+            {it.count}
+          </div>
+          <Tag variant={SEVERITY_VARIANT[it.severity]} dot>
+            {SEVERITY_LABEL[it.severity]}
+          </Tag>
+        </li>
+      ))}
+    </ul>
   );
 }

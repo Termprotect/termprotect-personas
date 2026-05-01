@@ -2,68 +2,67 @@
 
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 
-export type Theme = "light" | "dark" | "system";
+export type Theme = "day" | "night";
 
 interface ThemeContextValue {
   theme: Theme;
-  resolvedTheme: "light" | "dark";
   setTheme: (theme: Theme) => void;
   toggle: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-const STORAGE_KEY = "termprotect-theme";
+const COOKIE_KEY = "tp_theme";
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
-function getSystemTheme(): "light" | "dark" {
-  if (typeof window === "undefined") return "light";
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+function persistCookie(value: Theme) {
+  if (typeof document === "undefined") return;
+  document.cookie = `${COOKIE_KEY}=${value}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
 }
 
-function applyTheme(theme: Theme): "light" | "dark" {
-  const resolved = theme === "system" ? getSystemTheme() : theme;
-  const root = document.documentElement;
-  if (resolved === "dark") {
-    root.classList.add("dark");
-  } else {
-    root.classList.remove("dark");
-  }
-  return resolved;
+function applyAttribute(theme: Theme) {
+  if (typeof document === "undefined") return;
+  document.documentElement.setAttribute("data-theme", theme);
 }
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("system");
-  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
+interface ThemeProviderProps {
+  initial: Theme;
+  children: React.ReactNode;
+}
 
-  // On mount, sync from localStorage and apply
-  useEffect(() => {
-    const stored = (localStorage.getItem(STORAGE_KEY) as Theme | null) ?? "system";
-    setThemeState(stored);
-    setResolvedTheme(applyTheme(stored));
-  }, []);
+export function ThemeProvider({ initial, children }: ThemeProviderProps) {
+  const [theme, setThemeState] = useState<Theme>(initial);
 
-  // Watch system preference if user picked "system"
   useEffect(() => {
-    if (theme !== "system") return;
-    const mql = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = () => setResolvedTheme(applyTheme("system"));
-    mql.addEventListener("change", onChange);
-    return () => mql.removeEventListener("change", onChange);
+    applyAttribute(theme);
+    persistCookie(theme);
   }, [theme]);
 
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      const target = e.target as HTMLElement | null;
+      const tag = target?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || target?.isContentEditable) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key.toLowerCase() === "d") {
+        e.preventDefault();
+        setThemeState((t) => (t === "day" ? "night" : "day"));
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   const setTheme = useCallback((next: Theme) => {
-    localStorage.setItem(STORAGE_KEY, next);
     setThemeState(next);
-    setResolvedTheme(applyTheme(next));
   }, []);
 
   const toggle = useCallback(() => {
-    // Toggles between explicit light/dark (skips "system" for simplicity)
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
-  }, [resolvedTheme, setTheme]);
+    setThemeState((t) => (t === "day" ? "night" : "day"));
+  }, []);
 
   return (
-    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme, toggle }}>
+    <ThemeContext.Provider value={{ theme, setTheme, toggle }}>
       {children}
     </ThemeContext.Provider>
   );
@@ -75,21 +74,13 @@ export function useTheme() {
   return ctx;
 }
 
-/**
- * Inline script that runs BEFORE React hydration to prevent flash of wrong theme (FOUC).
- * Render this as an inline <script> in <head> of the root layout.
- */
 export const themeInitScript = `
-  (function() {
+  (function () {
     try {
-      var stored = localStorage.getItem('${STORAGE_KEY}');
-      var theme = stored || 'system';
-      var resolved = theme === 'system'
-        ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-        : theme;
-      if (resolved === 'dark') {
-        document.documentElement.classList.add('dark');
-      }
+      var match = document.cookie.match(/(?:^|; )tp_theme=([^;]+)/);
+      var theme = match ? decodeURIComponent(match[1]) : 'day';
+      if (theme !== 'day' && theme !== 'night') theme = 'day';
+      document.documentElement.setAttribute('data-theme', theme);
     } catch (e) {}
   })();
 `;

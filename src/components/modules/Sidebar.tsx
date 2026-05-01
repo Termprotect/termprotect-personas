@@ -4,89 +4,172 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
+  Home,
+  BarChart2,
   Users,
-  Clock,
-  CalendarDays,
   Star,
   BookOpen,
-  BarChart3,
+  Clock,
+  CalendarDays,
   Settings,
-  Home,
-  Shield,
 } from "lucide-react";
+import { Avatar } from "@/components/ui/avatar";
 
 interface NavItem {
   label: string;
   href: string;
   icon: React.ElementType;
-  minRole: string; // rol mínimo para ver este item
+  minRole: string;
+  badge?: string | number;
 }
 
-const navItems: NavItem[] = [
-  { label: "Inicio",        href: "/inicio",        icon: Home,        minRole: "EMPLEADO" },
-  { label: "Empleados",     href: "/empleados",     icon: Users,       minRole: "RRHH"     },
-  { label: "Jornada",       href: "/jornada",       icon: Clock,       minRole: "EMPLEADO" },
-  { label: "Ausencias",     href: "/ausencias",     icon: CalendarDays,minRole: "EMPLEADO" },
-  { label: "Evaluaciones",  href: "/evaluaciones",  icon: Star,        minRole: "EMPLEADO" },
-  { label: "Formación",     href: "/formacion",     icon: BookOpen,    minRole: "EMPLEADO" },
-  { label: "Analytics",     href: "/analytics",     icon: BarChart3,   minRole: "MANAGER"  },
-  { label: "Configuración", href: "/configuracion", icon: Settings,    minRole: "ADMIN"    },
+interface NavSection {
+  label: string;
+  items: NavItem[];
+}
+
+const NAV: NavSection[] = [
+  {
+    label: "Principal",
+    items: [
+      { label: "Inicio",    href: "/inicio",    icon: Home,       minRole: "EMPLEADO" },
+      { label: "Analytics", href: "/analytics", icon: BarChart2,  minRole: "MANAGER"  },
+    ],
+  },
+  {
+    label: "Personas",
+    items: [
+      { label: "Empleados",    href: "/empleados",    icon: Users,    minRole: "RRHH"     },
+      { label: "Evaluaciones", href: "/evaluaciones", icon: Star,     minRole: "EMPLEADO" },
+      { label: "Formación",    href: "/formacion",    icon: BookOpen, minRole: "EMPLEADO" },
+    ],
+  },
+  {
+    label: "Tiempo",
+    items: [
+      { label: "Jornada",   href: "/jornada",   icon: Clock,        minRole: "EMPLEADO" },
+      { label: "Ausencias", href: "/ausencias", icon: CalendarDays, minRole: "EMPLEADO" },
+    ],
+  },
+  {
+    label: "Sistema",
+    items: [
+      { label: "Configuración", href: "/configuracion", icon: Settings, minRole: "ADMIN" },
+    ],
+  },
 ];
 
-const roleHierarchy: Record<string, number> = {
-  ADMIN: 4, RRHH: 3, MANAGER: 2, EMPLEADO: 1,
+const ROLE_HIERARCHY: Record<string, number> = {
+  ADMIN: 4,
+  RRHH: 3,
+  MANAGER: 2,
+  EMPLEADO: 1,
+};
+
+const ROLE_LABEL: Record<string, string> = {
+  ADMIN: "Administrador",
+  RRHH: "RRHH",
+  MANAGER: "Manager",
+  EMPLEADO: "Empleado",
 };
 
 function canSee(userRole: string, minRole: string): boolean {
-  return (roleHierarchy[userRole] ?? 0) >= (roleHierarchy[minRole] ?? 99);
+  return (ROLE_HIERARCHY[userRole] ?? 0) >= (ROLE_HIERARCHY[minRole] ?? 99);
 }
 
-export default function Sidebar({ role }: { role: string }) {
-  const pathname = usePathname();
+interface SidebarProps {
+  role: string;
+  nombres?: string;
+  apellidos?: string;
+}
 
-  // Sidebar always dark — uses stone palette (warm grays) + hardcoded gold accent
-  // so it stays consistent in both light and dark modes (decision: "Mantener oscuro")
+export default function Sidebar({ role, nombres = "", apellidos = "" }: SidebarProps) {
+  const pathname = usePathname() || "/";
+  const fullName = `${nombres} ${apellidos}`.trim() || "Usuario";
+
   return (
-    <aside className="w-56 bg-stone-900 flex flex-col h-full shrink-0">
-      {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-5 border-b border-stone-800">
-        <div className="w-8 h-8 bg-[#A16207] rounded-lg flex items-center justify-center">
-          <Shield className="w-4 h-4 text-white" />
+    <aside
+      className="fixed top-0 left-0 bottom-0 w-[232px] flex flex-col bg-bg border-r border-line-2 z-30"
+    >
+      <div className="flex items-center gap-2.5 px-3 py-3.5">
+        <div className="relative w-7 h-7 rounded-lg bg-ink text-bg flex items-center justify-center font-mono text-[13px] font-semibold shrink-0 overflow-hidden">
+          T
+          <span
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(circle at 30% 25%, var(--accent) 0%, transparent 55%)",
+              opacity: 0.55,
+            }}
+            aria-hidden
+          />
         </div>
-        <div>
-          <p className="text-stone-50 text-sm font-semibold leading-none">Termprotect</p>
-          <p className="text-stone-400 text-xs leading-none mt-0.5">Personas</p>
+        <div className="min-w-0">
+          <div className="text-[14px] font-semibold leading-none text-ink">
+            Termprotect
+          </div>
+          <div className="text-[10px] font-mono uppercase tracking-[0.06em] text-ink-3 mt-1">
+            Personas · v2.4
+          </div>
         </div>
       </div>
 
-      {/* Navegación */}
-      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
-        {navItems
-          .filter((item) => canSee(role, item.minRole))
-          .map((item) => {
-            const isActive = pathname.startsWith(item.href);
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                  isActive
-                    ? "bg-[#A16207] text-white shadow-sm"
-                    : "text-stone-300 hover:text-stone-50 hover:bg-stone-800"
-                )}
-              >
-                <Icon className="w-4 h-4 shrink-0" />
-                {item.label}
-              </Link>
-            );
-          })}
+      <nav className="flex-1 px-3 pt-1 pb-3 overflow-y-auto">
+        {NAV.map((section) => {
+          const items = section.items.filter((it) => canSee(role, it.minRole));
+          if (items.length === 0) return null;
+          return (
+            <div key={section.label} className="mb-3">
+              <div className="px-2.5 mb-1.5 text-[9.5px] uppercase tracking-[0.12em] text-ink-4 font-semibold">
+                {section.label}
+              </div>
+              <ul className="flex flex-col gap-px">
+                {items.map((item) => {
+                  const isActive =
+                    pathname === item.href || pathname.startsWith(item.href + "/");
+                  const Icon = item.icon;
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          "relative flex items-center gap-2.5 px-2.5 py-[7px] rounded-md text-[13px] transition-colors",
+                          isActive
+                            ? "bg-surface text-ink shadow-sm"
+                            : "text-ink-2 hover:bg-line hover:text-ink",
+                        )}
+                      >
+                        {isActive ? (
+                          <span
+                            aria-hidden
+                            className="absolute -left-3 top-1/2 -translate-y-1/2 w-[3px] h-[18px] rounded-r bg-accent"
+                          />
+                        ) : null}
+                        <Icon className="w-[16px] h-[16px] shrink-0" />
+                        <span className="flex-1 truncate">{item.label}</span>
+                        {item.badge ? (
+                          <span className="font-mono text-[10px] px-1.5 py-px rounded-full bg-accent-2 text-white dark:text-[#0a0e1a]">
+                            {item.badge}
+                          </span>
+                        ) : null}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          );
+        })}
       </nav>
 
-      {/* Versión */}
-      <div className="px-5 py-3 border-t border-stone-800">
-        <p className="text-stone-500 text-xs">v1.0.0</p>
+      <div className="border-t border-line-2 px-3 py-3 flex items-center gap-2.5">
+        <Avatar name={fullName} size="lg" />
+        <div className="flex flex-col min-w-0">
+          <div className="text-[12.5px] font-medium text-ink truncate">{fullName}</div>
+          <div className="text-[10.5px] font-mono uppercase tracking-[0.04em] text-ink-3">
+            {ROLE_LABEL[role] ?? role}
+          </div>
+        </div>
       </div>
     </aside>
   );

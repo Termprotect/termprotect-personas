@@ -65,8 +65,6 @@ export default function EditarForm({
     watch,
     formState: { errors, isDirty },
   } = useForm<UpdateEmployeeInput>({
-    // Cast necesario porque el schema usa preprocess/transform:
-    // el input del form (strings) no coincide tipo-a-tipo con el output parseado.
     resolver: zodResolver(updateEmployeeSchema) as unknown as Resolver<UpdateEmployeeInput>,
     defaultValues: initialValues as unknown as UpdateEmployeeInput,
   });
@@ -86,7 +84,6 @@ export default function EditarForm({
       });
       const json = await res.json();
       if (!res.ok) {
-        // Si el backend devuelve detalles de Zod, los listamos campo a campo
         if (json.details?.fieldErrors) {
           const fieldErrs = json.details.fieldErrors as Record<string, string[]>;
           const msgs = Object.entries(fieldErrs)
@@ -116,16 +113,16 @@ export default function EditarForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="bg-white rounded-xl border border-slate-200 p-6 space-y-6"
+      className="bg-surface rounded-xl border border-line-2 shadow-sm p-6 space-y-6"
     >
       {serverError && (
-        <div className="flex items-start gap-2 p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-700 text-sm">
+        <div className="flex items-start gap-2 p-3 bg-bad/15 border border-bad/30 rounded-lg text-bad text-[12.5px]">
           <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
           <span>{serverError}</span>
         </div>
       )}
       {okMsg && (
-        <div className="flex items-start gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-700 text-sm">
+        <div className="flex items-start gap-2 p-3 bg-good/15 border border-good/30 rounded-lg text-good text-[12.5px]">
           <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" />
           <span>{okMsg}</span>
         </div>
@@ -227,11 +224,11 @@ export default function EditarForm({
           </Field>
         </div>
 
-        <label className="flex items-center gap-2 mt-4 text-sm text-slate-700 cursor-pointer select-none">
+        <label className="flex items-center gap-2 mt-4 text-[12.5px] text-ink-2 cursor-pointer select-none">
           <input
             type="checkbox"
             {...register("requiresDriving")}
-            className="w-4 h-4 rounded border-slate-300 text-blue-600"
+            className="w-4 h-4 rounded border-line-3 accent-accent"
           />
           Conduce vehículos de la empresa
         </label>
@@ -255,7 +252,12 @@ export default function EditarForm({
               <input type="text" {...register("drivingLicenseNumber")} className={inputCls} />
             </Field>
             <Field label="Categoría" error={errors.drivingLicenseCategory?.message}>
-              <input type="text" {...register("drivingLicenseCategory")} className={inputCls} placeholder="B, C, C+E, D..." />
+              <input
+                type="text"
+                {...register("drivingLicenseCategory")}
+                className={inputCls}
+                placeholder="B, C, C+E, D..."
+              />
             </Field>
             <Field label="Caducidad permiso" error={errors.drivingLicenseExpiresAt?.message}>
               <input type="date" {...register("drivingLicenseExpiresAt")} className={inputCls} />
@@ -264,18 +266,18 @@ export default function EditarForm({
         </Section>
       )}
 
-      <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
+      <div className="flex items-center justify-end gap-3 pt-2 border-t border-line">
         <button
           type="button"
           onClick={() => router.push(`/empleados/${employeeId}`)}
-          className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 transition-colors"
+          className="h-9 px-4 text-[12.5px] text-ink-3 hover:text-ink transition-colors"
         >
           Cancelar
         </button>
         <button
           type="submit"
           disabled={submitting || !isDirty}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-medium rounded-lg transition-colors"
+          className="inline-flex items-center gap-2 h-9 px-4 bg-ink text-bg dark:bg-accent dark:text-[#0a0e1a] hover:opacity-90 disabled:opacity-60 text-[12.5px] font-medium rounded-lg shadow-sm transition-opacity"
         >
           {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
           Guardar cambios
@@ -286,7 +288,7 @@ export default function EditarForm({
 }
 
 const inputCls =
-  "w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white disabled:bg-slate-50 disabled:text-slate-400";
+  "w-full px-3 py-2 border border-line-2 rounded-lg text-[13px] text-ink bg-surface placeholder:text-ink-4 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 disabled:bg-bg-2 disabled:text-ink-4 transition-colors";
 
 function Section({
   title,
@@ -300,8 +302,12 @@ function Section({
   return (
     <div>
       <div className="mb-3">
-        <h2 className="text-sm font-semibold text-slate-800">{title}</h2>
-        {hint && <p className="text-xs text-slate-400 mt-0.5">{hint}</p>}
+        <h2 className="text-[12px] font-semibold uppercase tracking-[0.04em] text-ink-2">
+          {title}
+        </h2>
+        {hint && (
+          <p className="text-[11px] font-mono text-ink-3 mt-1">{hint}</p>
+        )}
       </div>
       {children}
     </div>
@@ -352,12 +358,14 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-600 mb-1">
-        {label} {required && <span className="text-rose-500">*</span>}
+      <label className="block text-[10.5px] font-mono uppercase tracking-[0.04em] font-medium text-ink-3 mb-1">
+        {label} {required && <span className="text-bad">*</span>}
       </label>
       {children}
-      {error && <p className="text-xs text-rose-600 mt-1">{error}</p>}
-      {!error && hint && <p className="text-xs text-slate-400 mt-1">{hint}</p>}
+      {error && <p className="text-[11.5px] text-bad mt-1">{error}</p>}
+      {!error && hint && (
+        <p className="text-[11px] font-mono text-ink-4 mt-1">{hint}</p>
+      )}
     </div>
   );
 }
