@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // pdfkit se importa en runtime (Node) en /api/time-entries/export.
+  // No queremos que Turbopack/webpack lo bundlee porque rompe las fuentes .afm.
+  serverExternalPackages: ["pdfkit"],
 };
 
 export default nextConfig;

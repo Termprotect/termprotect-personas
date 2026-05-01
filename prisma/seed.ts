@@ -122,6 +122,82 @@ async function main() {
   });
 
   console.log(`✅ Usuario RRHH creado: documento=${rrhh.documentNumber}, contraseña temporal: Rrhh2024!`);
+
+  // ─────────────────────────────────────────────
+  // 4. Plantillas de evaluación (Presupuesto)
+  // ─────────────────────────────────────────────
+
+  const templateOfertas = await prisma.evalTemplate.upsert({
+    where: { id: "tmpl_presupuesto_ofertas" },
+    update: {},
+    create: {
+      id: "tmpl_presupuesto_ofertas",
+      name: "Presupuesto — Creación de ofertas",
+      description:
+        "Evaluación mensual por parte de los comerciales al equipo de Presupuesto que elabora ofertas.",
+      questions: [
+        {
+          id: "comunicacion",
+          label: "Comunicación",
+          help: "Claridad, disponibilidad y respuesta en las consultas sobre ofertas.",
+        },
+        {
+          id: "proactividad",
+          label: "Proactividad",
+          help: "Anticipación a necesidades, propuesta de mejoras y seguimiento.",
+        },
+        {
+          id: "conocimiento_tecnico",
+          label: "Conocimiento técnico",
+          help: "Dominio del producto/servicio y criterio al elaborar la oferta.",
+        },
+        {
+          id: "velocidad_oferta",
+          label: "Velocidad de oferta",
+          help: "Tiempo de respuesta desde la solicitud hasta la entrega de la oferta.",
+        },
+      ],
+      createdBy: admin.id,
+    },
+  });
+
+  const templatePem = await prisma.evalTemplate.upsert({
+    where: { id: "tmpl_presupuesto_pem" },
+    update: {},
+    create: {
+      id: "tmpl_presupuesto_pem",
+      name: "Presupuesto — Puesta en marcha",
+      description:
+        "Evaluación mensual por parte de los comerciales a la persona de Presupuesto responsable de la puesta en marcha.",
+      questions: [
+        {
+          id: "comunicacion_pem",
+          label: "Comunicación en PEM",
+          help: "Claridad y frecuencia de información durante la puesta en marcha.",
+        },
+        {
+          id: "proactividad_pem",
+          label: "Proactividad en PEM",
+          help: "Detección y resolución anticipada de incidencias durante la puesta en marcha.",
+        },
+        {
+          id: "aporte_tecnico_pem",
+          label: "Conocimiento / aporte técnico en PEM",
+          help: "Dominio técnico y valor aportado al cliente durante la puesta en marcha.",
+        },
+      ],
+      createdBy: admin.id,
+    },
+  });
+
+  console.log(
+    `✅ Plantillas creadas: "${templateOfertas.name}" (${
+      (templateOfertas.questions as { id: string }[]).length
+    }) · "${templatePem.name}" (${
+      (templatePem.questions as { id: string }[]).length
+    })`
+  );
+
   console.log("🌱 Seed completado correctamente.");
 }
 

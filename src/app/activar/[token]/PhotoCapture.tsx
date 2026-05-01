@@ -128,10 +128,10 @@ export default function PhotoCapture({
         <img
           src={uploadedUrl}
           alt="Foto de perfil"
-          className="w-20 h-20 rounded-full object-cover border-2 border-emerald-300"
+          className="w-20 h-20 rounded-full object-cover border-2 border-success/30"
         />
         <div className="flex-1">
-          <p className="text-sm font-medium text-emerald-700 flex items-center gap-1">
+          <p className="text-sm font-medium text-success flex items-center gap-1">
             <Check className="w-4 h-4" /> Foto guardada
           </p>
           <button
@@ -140,7 +140,7 @@ export default function PhotoCapture({
               setUploadedUrl(null);
               retake();
             }}
-            className="text-xs text-slate-500 hover:text-slate-700 mt-1 inline-flex items-center gap-1"
+            className="text-xs text-muted-foreground hover:text-foreground mt-1 inline-flex items-center gap-1"
           >
             <RotateCcw className="w-3 h-3" /> Cambiar foto
           </button>
@@ -160,14 +160,14 @@ export default function PhotoCapture({
           <button
             type="button"
             onClick={capturePhoto}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-lg"
           >
             <Camera className="w-4 h-4" /> Capturar
           </button>
           <button
             type="button"
             onClick={() => { stopCamera(); setMode("idle"); }}
-            className="inline-flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-800 text-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 text-muted-foreground hover:text-foreground text-sm"
           >
             <X className="w-4 h-4" /> Cancelar
           </button>
@@ -180,16 +180,16 @@ export default function PhotoCapture({
     return (
       <div className="space-y-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={preview} alt="Previsualización" className="w-40 h-40 rounded-lg object-cover border border-slate-200" />
+        <img src={preview} alt="Previsualización" className="w-40 h-40 rounded-lg object-cover border border-border" />
         {error && (
-          <p className="text-xs text-rose-600">{error}</p>
+          <p className="text-xs text-destructive">{error}</p>
         )}
         <div className="flex gap-2">
           <button
             type="button"
             onClick={upload}
             disabled={uploading}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-medium rounded-lg"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 disabled:opacity-60 text-white text-sm font-medium rounded-lg"
           >
             {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             Usar esta foto
@@ -197,7 +197,7 @@ export default function PhotoCapture({
           <button
             type="button"
             onClick={retake}
-            className="inline-flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-800 text-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 text-muted-foreground hover:text-foreground text-sm"
           >
             <RotateCcw className="w-4 h-4" /> Volver a intentar
           </button>
@@ -212,14 +212,14 @@ export default function PhotoCapture({
         <button
           type="button"
           onClick={startCamera}
-          className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-lg"
+          className="inline-flex items-center gap-2 px-4 py-2 border border-border hover:bg-secondary text-foreground text-sm font-medium rounded-lg"
         >
           <Camera className="w-4 h-4" /> Tomar foto
         </button>
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-lg"
+          className="inline-flex items-center gap-2 px-4 py-2 border border-border hover:bg-secondary text-foreground text-sm font-medium rounded-lg"
         >
           <Upload className="w-4 h-4" /> Subir archivo
         </button>
@@ -231,8 +231,8 @@ export default function PhotoCapture({
           className="hidden"
         />
       </div>
-      {error && <p className="text-xs text-rose-600">{error}</p>}
-      <p className="text-xs text-slate-400">JPG, PNG o WEBP. Máx 5 MB.</p>
+      {error && <p className="text-xs text-destructive">{error}</p>}
+      <p className="text-xs text-muted-foreground">JPG, PNG o WEBP. Máx 5 MB.</p>
     </div>
   );
 }
