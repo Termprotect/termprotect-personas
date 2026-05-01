@@ -40,23 +40,23 @@ export default function EmpleadosFilters({ sedes }: { sedes: Sede[] }) {
   const hasFilters = q || sede || estado || rol;
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-3">
+    <div className="bg-background rounded-xl border border-border p-4 space-y-3">
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[220px]">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Buscar por nombre, apellido, DNI o email..."
-            className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            className="w-full pl-9 pr-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
           />
         </div>
 
         <select
           value={sede}
           onChange={(e) => updateParams({ sede: e.target.value })}
-          className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
+          className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent bg-background"
         >
           <option value="">Todas las sedes</option>
           {sedes.map((s) => (
@@ -69,7 +69,7 @@ export default function EmpleadosFilters({ sedes }: { sedes: Sede[] }) {
         <select
           value={estado}
           onChange={(e) => updateParams({ estado: e.target.value })}
-          className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
+          className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent bg-background"
         >
           <option value="">Todos los estados</option>
           <option value="INVITADO">Invitado</option>
@@ -83,7 +83,7 @@ export default function EmpleadosFilters({ sedes }: { sedes: Sede[] }) {
         <select
           value={rol}
           onChange={(e) => updateParams({ rol: e.target.value })}
-          className="px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white"
+          className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent bg-background"
         >
           <option value="">Todos los roles</option>
           <option value="ADMIN">Administrador</option>
@@ -99,7 +99,7 @@ export default function EmpleadosFilters({ sedes }: { sedes: Sede[] }) {
               setQ("");
               startTransition(() => router.push("/empleados"));
             }}
-            className="inline-flex items-center gap-1 px-3 py-2 text-sm text-slate-500 hover:text-slate-700 transition-colors"
+            className="inline-flex items-center gap-1 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <X className="w-4 h-4" />
             Limpiar

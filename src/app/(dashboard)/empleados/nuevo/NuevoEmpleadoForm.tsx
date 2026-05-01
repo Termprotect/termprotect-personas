@@ -66,10 +66,10 @@ export default function NuevoEmpleadoForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="bg-white rounded-xl border border-slate-200 p-6 space-y-6"
+      className="bg-background rounded-xl border border-border p-6 space-y-6"
     >
       {serverError && (
-        <div className="flex items-start gap-2 p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-700 text-sm">
+        <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
           <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
           <span>{serverError}</span>
         </div>
@@ -151,24 +151,24 @@ export default function NuevoEmpleadoForm({
           </Field>
         </div>
 
-        <label className="flex items-center gap-2 mt-4 text-sm text-slate-700 cursor-pointer select-none">
-          <input type="checkbox" {...register("requiresDriving")} className="w-4 h-4 rounded border-slate-300 text-blue-600" />
+        <label className="flex items-center gap-2 mt-4 text-sm text-foreground cursor-pointer select-none">
+          <input type="checkbox" {...register("requiresDriving")} className="w-4 h-4 rounded border-border text-primary" />
           Este empleado conduce vehículos de la empresa (se pedirá permiso de conducir y CAP)
         </label>
       </Section>
 
-      <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
+      <div className="flex items-center justify-end gap-3 pt-2 border-t border-border">
         <button
           type="button"
           onClick={() => router.push("/empleados")}
-          className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 transition-colors"
+          className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           Cancelar
         </button>
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-medium rounded-lg transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 disabled:opacity-60 text-white text-sm font-medium rounded-lg transition-colors"
         >
           {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
           Crear y enviar invitación
@@ -179,12 +179,12 @@ export default function NuevoEmpleadoForm({
 }
 
 const inputCls =
-  "w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white disabled:bg-slate-50";
+  "w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent bg-background disabled:bg-secondary";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h2 className="text-sm font-semibold text-slate-800 mb-3">{title}</h2>
+      <h2 className="text-sm font-semibold text-foreground mb-3">{title}</h2>
       {children}
     </div>
   );
@@ -205,12 +205,12 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-600 mb-1">
-        {label} {required && <span className="text-rose-500">*</span>}
+      <label className="block text-xs font-medium text-muted-foreground mb-1">
+        {label} {required && <span className="text-destructive">*</span>}
       </label>
       {children}
-      {error && <p className="text-xs text-rose-600 mt-1">{error}</p>}
-      {!error && hint && <p className="text-xs text-slate-400 mt-1">{hint}</p>}
+      {error && <p className="text-xs text-destructive mt-1">{error}</p>}
+      {!error && hint && <p className="text-xs text-muted-foreground mt-1">{hint}</p>}
     </div>
   );
 }

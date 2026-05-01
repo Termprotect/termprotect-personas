@@ -75,30 +75,30 @@ function formatDateTime(iso: string) {
 
 export default function HistoryList({ items }: { items: HistoryItem[] }) {
   if (items.length === 0) {
-    return <p className="text-sm text-slate-500">Sin cambios registrados.</p>;
+    return <p className="text-sm text-muted-foreground">Sin cambios registrados.</p>;
   }
 
   return (
     <ul className="space-y-3">
       {items.map((h) => (
         <li key={h.id} className="flex items-start gap-3">
-          <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center shrink-0 mt-0.5">
-            <History className="w-3.5 h-3.5 text-slate-500" />
+          <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center shrink-0 mt-0.5">
+            <History className="w-3.5 h-3.5 text-muted-foreground" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-slate-800">
+            <p className="text-sm text-foreground">
               <span className="font-medium">{fieldLabel[h.field] ?? h.field}</span>:{" "}
-              <span className="text-slate-500 line-through">
+              <span className="text-muted-foreground line-through">
                 {formatValue(h.field, h.oldValue)}
               </span>{" "}
-              → <span className="text-slate-800">{formatValue(h.field, h.newValue)}</span>
+              → <span className="text-foreground">{formatValue(h.field, h.newValue)}</span>
             </p>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               {formatDateTime(h.changedAt)}
               {h.actorName ? ` · por ${h.actorName}` : ""}
             </p>
             {h.reason && (
-              <p className="text-xs text-slate-600 mt-1 italic">
+              <p className="text-xs text-muted-foreground mt-1 italic">
                 Motivo: {h.reason}
               </p>
             )}

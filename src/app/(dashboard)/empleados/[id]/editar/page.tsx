@@ -110,15 +110,15 @@ export default async function EditarEmpleadoPage({
       <div>
         <Link
           href={`/empleados/${id}`}
-          className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 transition-colors mb-3"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-3"
         >
           <ArrowLeft className="w-4 h-4" />
           Volver a la ficha
         </Link>
-        <h1 className="text-2xl font-bold text-slate-800">
+        <h1 className="text-2xl font-bold text-foreground">
           Editar: {employee.nombres} {employee.apellidos}
         </h1>
-        <p className="text-slate-500 text-sm mt-1">
+        <p className="text-muted-foreground text-sm mt-1">
           {employee.documentType} {employee.documentNumber} · los cambios en campos
           laborales quedan registrados en el historial.
         </p>

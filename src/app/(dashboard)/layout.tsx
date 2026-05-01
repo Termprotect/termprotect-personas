@@ -22,7 +22,7 @@ export default async function DashboardLayout({
   const apellidos = session.user.apellidos ?? "";
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex h-screen bg-secondary overflow-hidden">
       <Sidebar role={role} />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Topbar nombres={nombres} apellidos={apellidos} role={role} />

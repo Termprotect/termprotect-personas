@@ -50,7 +50,7 @@ export default function DocumentList({ documents }: { documents: DocItem[] }) {
 
   if (documents.length === 0) {
     return (
-      <p className="text-sm text-slate-500">Sin documentos subidos.</p>
+      <p className="text-sm text-muted-foreground">Sin documentos subidos.</p>
     );
   }
 
@@ -74,7 +74,7 @@ export default function DocumentList({ documents }: { documents: DocItem[] }) {
   };
 
   return (
-    <ul className="divide-y divide-slate-100">
+    <ul className="divide-y divide-border">
       {documents.map((doc) => {
         const days = daysUntil(doc.expiresAt);
         const expired = days !== null && days < 0;
@@ -85,30 +85,30 @@ export default function DocumentList({ documents }: { documents: DocItem[] }) {
 
         return (
           <li key={doc.id} className="py-3 flex items-start gap-3">
-            <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-              <FileText className="w-4 h-4 text-slate-500" />
+            <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
+              <FileText className="w-4 h-4 text-muted-foreground" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="text-sm font-medium text-slate-800">{label}</p>
+                <p className="text-sm font-medium text-foreground">{label}</p>
                 {expired && (
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-rose-50 text-rose-700 border border-rose-200">
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-destructive/10 text-destructive border border-destructive/20">
                     <AlertTriangle className="w-3 h-3" /> Caducado
                   </span>
                 )}
                 {!expired && soon && (
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-warning/10 text-warning border border-warning/20">
                     <AlertTriangle className="w-3 h-3" /> Caduca en {days} d
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-500 mt-0.5 truncate">{doc.fileName}</p>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5 truncate">{doc.fileName}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Subido el {formatDate(doc.uploadedAt)}
                 {doc.expiresAt && ` · Caduca el ${formatDate(doc.expiresAt)}`}
               </p>
               {err && (
-                <p className="text-xs text-rose-600 mt-1 flex items-center gap-1">
+                <p className="text-xs text-destructive mt-1 flex items-center gap-1">
                   <AlertCircle className="w-3 h-3" /> {err}
                 </p>
               )}
@@ -117,7 +117,7 @@ export default function DocumentList({ documents }: { documents: DocItem[] }) {
               type="button"
               onClick={() => openDoc(doc.id)}
               disabled={isLoading}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs border border-slate-200 hover:bg-slate-50 disabled:opacity-60 rounded-md text-slate-700 shrink-0"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs border border-border hover:bg-secondary disabled:opacity-60 rounded-md text-foreground shrink-0"
             >
               {isLoading ? (
                 <Loader2 className="w-3 h-3 animate-spin" />

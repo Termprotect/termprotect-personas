@@ -97,7 +97,7 @@ export default function EmployeeActions({
         <button
           type="button"
           onClick={() => setMenuOpen((v) => !v)}
-          className="inline-flex items-center gap-2 px-3 py-2 text-sm border border-slate-200 hover:bg-slate-50 rounded-lg text-slate-700"
+          className="inline-flex items-center gap-2 px-3 py-2 text-sm border border-border hover:bg-secondary rounded-lg text-foreground"
         >
           <MoreVertical className="w-4 h-4" />
           Acciones
@@ -108,7 +108,7 @@ export default function EmployeeActions({
               className="fixed inset-0 z-10"
               onClick={() => setMenuOpen(false)}
             />
-            <div className="absolute right-0 mt-1 z-20 bg-white border border-slate-200 rounded-lg shadow-lg py-1 min-w-[220px]">
+            <div className="absolute right-0 mt-1 z-20 bg-background border border-border rounded-lg shadow-lg py-1 min-w-[220px]">
               {currentStatus === "INVITADO" && (
                 <button
                   type="button"
@@ -117,7 +117,7 @@ export default function EmployeeActions({
                     resend();
                   }}
                   disabled={resending}
-                  className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-60 flex items-center gap-2"
+                  className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-secondary disabled:opacity-60 flex items-center gap-2"
                 >
                   {resending ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -128,13 +128,13 @@ export default function EmployeeActions({
                 </button>
               )}
               {transitions.length === 0 && currentStatus !== "INVITADO" && (
-                <p className="px-3 py-2 text-xs text-slate-400">
+                <p className="px-3 py-2 text-xs text-muted-foreground">
                   Sin acciones disponibles
                 </p>
               )}
               {transitions.length > 0 && (
                 <>
-                  <p className="px-3 pt-2 pb-1 text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
+                  <p className="px-3 pt-2 pb-1 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
                     Cambiar estado
                   </p>
                   {transitions.map((s) => (
@@ -145,7 +145,7 @@ export default function EmployeeActions({
                         setMenuOpen(false);
                         setModal(s);
                       }}
-                      className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                      className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-secondary"
                     >
                       → {STATUS_LABELS[s]}
                     </button>
@@ -178,8 +178,8 @@ export default function EmployeeActions({
         <div
           className={`fixed bottom-6 right-6 z-50 flex items-start gap-2 p-3 rounded-lg shadow-lg border text-sm ${
             toast.kind === "ok"
-              ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-              : "bg-rose-50 border-rose-200 text-rose-700"
+              ? "bg-success/10 border-success/20 text-success"
+              : "bg-destructive/10 border-destructive/20 text-destructive"
           }`}
         >
           {toast.kind === "ok" ? (
@@ -191,7 +191,7 @@ export default function EmployeeActions({
           <button
             type="button"
             onClick={() => setToast(null)}
-            className="ml-2 text-slate-400 hover:text-slate-600"
+            className="ml-2 text-muted-foreground hover:text-muted-foreground"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -254,14 +254,14 @@ function StatusModal({
   };
 
   return (
-    <div className="fixed inset-0 z-30 bg-slate-900/40 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+    <div className="fixed inset-0 z-30 bg-primary/40 flex items-center justify-center p-4">
+      <div className="bg-background rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="text-lg font-bold text-slate-800">
+            <h3 className="text-lg font-bold text-foreground">
               Cambiar estado
             </h3>
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               De <strong>{STATUS_LABELS[currentStatus]}</strong> a{" "}
               <strong>{STATUS_LABELS[newStatus]}</strong>
             </p>
@@ -269,34 +269,34 @@ function StatusModal({
           <button
             type="button"
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600"
+            className="text-muted-foreground hover:text-muted-foreground"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {error && (
-          <div className="flex items-start gap-2 p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-700 text-sm">
+          <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
             <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            Fecha efectiva <span className="text-rose-500">*</span>
+          <label className="block text-xs font-medium text-muted-foreground mb-1">
+            Fecha efectiva <span className="text-destructive">*</span>
           </label>
           <input
             type="date"
             value={effectiveDate}
             onChange={(e) => setEffectiveDate(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            Motivo {reasonRequired && <span className="text-rose-500">*</span>}
+          <label className="block text-xs font-medium text-muted-foreground mb-1">
+            Motivo {reasonRequired && <span className="text-destructive">*</span>}
           </label>
           <textarea
             value={reason}
@@ -307,12 +307,12 @@ function StatusModal({
                 ? "Motivo obligatorio (queda registrado en el historial)"
                 : "Motivo opcional"
             }
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none"
+            className="w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent resize-none"
           />
         </div>
 
         {(newStatus === "BAJA_VOLUNTARIA" || newStatus === "DESPIDO") && (
-          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2">
+          <p className="text-xs text-warning bg-warning/10 border border-warning/20 rounded-lg p-2">
             Esta acción registra fecha de fin de contrato y el empleado ya no
             podrá acceder a la app.
           </p>
@@ -322,7 +322,7 @@ function StatusModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800"
+            className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground"
           >
             Cancelar
           </button>
@@ -330,7 +330,7 @@ function StatusModal({
             type="button"
             onClick={submit}
             disabled={submitting}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-medium rounded-lg"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 disabled:opacity-60 text-white text-sm font-medium rounded-lg"
           >
             {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
             Confirmar

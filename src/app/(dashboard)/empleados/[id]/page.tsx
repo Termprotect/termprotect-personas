@@ -150,7 +150,7 @@ export default async function EmpleadoDetailPage({
       <div>
         <Link
           href="/empleados"
-          className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 transition-colors mb-3"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-3"
         >
           <ArrowLeft className="w-4 h-4" />
           Volver al listado
@@ -158,9 +158,9 @@ export default async function EmpleadoDetailPage({
       </div>
 
       {/* Cabecera */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
+      <div className="bg-background rounded-xl border border-border p-6">
         <div className="flex items-start gap-5">
-          <div className="w-20 h-20 rounded-full bg-slate-100 overflow-hidden flex items-center justify-center shrink-0">
+          <div className="w-20 h-20 rounded-full bg-muted overflow-hidden flex items-center justify-center shrink-0">
             {employee.photoUrl ? (
               <Image
                 src={employee.photoUrl}
@@ -170,22 +170,22 @@ export default async function EmpleadoDetailPage({
                 className="w-full h-full object-cover"
               />
             ) : (
-              <User className="w-8 h-8 text-slate-400" />
+              <User className="w-8 h-8 text-muted-foreground" />
             )}
           </div>
           <div className="flex-1">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h1 className="text-2xl font-bold text-slate-800">
+                <h1 className="text-2xl font-bold text-foreground">
                   {employee.nombres} {employee.apellidos}
                 </h1>
-                <p className="text-slate-500 mt-0.5">
+                <p className="text-muted-foreground mt-0.5">
                   {employee.position ?? "—"}
                   {employee.department && ` · ${employee.department}`}
                 </p>
                 <div className="flex items-center gap-2 mt-2">
                   <StatusBadge status={employee.status} />
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-muted-foreground">
                     {roleLabel[employee.role] ?? employee.role}
                   </span>
                 </div>
@@ -194,7 +194,7 @@ export default async function EmpleadoDetailPage({
                 <div className="flex items-center gap-2">
                   <Link
                     href={`/empleados/${employee.id}/editar`}
-                    className="inline-flex items-center gap-2 px-3 py-2 text-sm border border-slate-200 hover:bg-slate-50 rounded-lg text-slate-700"
+                    className="inline-flex items-center gap-2 px-3 py-2 text-sm border border-border hover:bg-secondary rounded-lg text-foreground"
                   >
                     <Pencil className="w-4 h-4" />
                     Editar
@@ -276,14 +276,14 @@ export default async function EmpleadoDetailPage({
               <Item label="IP" value={employee.clausulaAcceptedIp ?? "—"} mono />
             </>
           ) : (
-            <p className="text-sm text-slate-500">Pendiente de firma.</p>
+            <p className="text-sm text-muted-foreground">Pendiente de firma.</p>
           )}
         </Card>
       </div>
 
       {/* Documentos */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
-        <h2 className="text-sm font-semibold text-slate-800 mb-4">
+      <div className="bg-background rounded-xl border border-border p-6">
+        <h2 className="text-sm font-semibold text-foreground mb-4">
           Documentos ({employee.documents.length})
         </h2>
         <DocumentList documents={employee.documents.map((d) => ({
@@ -296,12 +296,12 @@ export default async function EmpleadoDetailPage({
       </div>
 
       {/* Historial de cambios */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
+      <div className="bg-background rounded-xl border border-border p-6">
         <div className="flex items-center gap-2 mb-4">
-          <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
-            <HistoryIcon className="w-3.5 h-3.5 text-blue-600" />
+          <div className="w-7 h-7 rounded-lg bg-info/10 flex items-center justify-center">
+            <HistoryIcon className="w-3.5 h-3.5 text-primary" />
           </div>
-          <h2 className="text-sm font-semibold text-slate-800">
+          <h2 className="text-sm font-semibold text-foreground">
             Historial de cambios ({historyItems.length})
           </h2>
         </div>
@@ -309,8 +309,8 @@ export default async function EmpleadoDetailPage({
       </div>
 
       {/* Metadatos */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
-        <h2 className="text-sm font-semibold text-slate-800 mb-3">Actividad</h2>
+      <div className="bg-background rounded-xl border border-border p-6">
+        <h2 className="text-sm font-semibold text-foreground mb-3">Actividad</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <Item label="Alta en el sistema" value={formatDate(employee.createdAt)} />
           <Item label="Último acceso" value={employee.lastLogin ? formatDate(employee.lastLogin) : "—"} />
@@ -331,12 +331,12 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-6">
+    <div className="bg-background rounded-xl border border-border p-6">
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
-          <Icon className="w-3.5 h-3.5 text-blue-600" />
+        <div className="w-7 h-7 rounded-lg bg-info/10 flex items-center justify-center">
+          <Icon className="w-3.5 h-3.5 text-primary" />
         </div>
-        <h2 className="text-sm font-semibold text-slate-800">{title}</h2>
+        <h2 className="text-sm font-semibold text-foreground">{title}</h2>
       </div>
       <dl className="space-y-2.5">{children}</dl>
     </div>
@@ -356,10 +356,10 @@ function Item({
 }) {
   return (
     <div className="flex items-start gap-2">
-      {Icon && <Icon className="w-3.5 h-3.5 text-slate-400 mt-0.5 shrink-0" />}
+      {Icon && <Icon className="w-3.5 h-3.5 text-muted-foreground mt-0.5 shrink-0" />}
       <div className="flex-1 min-w-0">
-        <dt className="text-xs text-slate-500">{label}</dt>
-        <dd className={`text-sm text-slate-800 ${mono ? "font-mono" : ""}`}>{value}</dd>
+        <dt className="text-xs text-muted-foreground">{label}</dt>
+        <dd className={`text-sm text-foreground ${mono ? "font-mono" : ""}`}>{value}</dd>
       </div>
     </div>
   );

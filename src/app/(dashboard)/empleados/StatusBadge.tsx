@@ -2,19 +2,19 @@ const statusConfig: Record<
   string,
   { label: string; bg: string; text: string }
 > = {
-  INVITADO: { label: "Invitado", bg: "bg-amber-50", text: "text-amber-700" },
-  ACTIVE: { label: "Activo", bg: "bg-emerald-50", text: "text-emerald-700" },
+  INVITADO: { label: "Invitado", bg: "bg-warning/10", text: "text-warning" },
+  ACTIVE: { label: "Activo", bg: "bg-success/10", text: "text-success" },
   BAJA_MEDICA: { label: "Baja médica", bg: "bg-orange-50", text: "text-orange-700" },
   EXCEDENCIA: { label: "Excedencia", bg: "bg-sky-50", text: "text-sky-700" },
-  BAJA_VOLUNTARIA: { label: "Baja voluntaria", bg: "bg-slate-100", text: "text-slate-600" },
-  DESPIDO: { label: "Despido", bg: "bg-rose-50", text: "text-rose-700" },
+  BAJA_VOLUNTARIA: { label: "Baja voluntaria", bg: "bg-muted", text: "text-muted-foreground" },
+  DESPIDO: { label: "Despido", bg: "bg-destructive/10", text: "text-destructive" },
 };
 
 export default function StatusBadge({ status }: { status: string }) {
   const cfg = statusConfig[status] ?? {
     label: status,
-    bg: "bg-slate-100",
-    text: "text-slate-600",
+    bg: "bg-muted",
+    text: "text-muted-foreground",
   };
   return (
     <span

@@ -36,13 +36,13 @@ export default async function NuevoEmpleadoPage() {
       <div>
         <Link
           href="/empleados"
-          className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 transition-colors mb-3"
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-3"
         >
           <ArrowLeft className="w-4 h-4" />
           Volver al listado
         </Link>
-        <h1 className="text-2xl font-bold text-slate-800">Nuevo empleado</h1>
-        <p className="text-slate-500 text-sm mt-1">
+        <h1 className="text-2xl font-bold text-foreground">Nuevo empleado</h1>
+        <p className="text-muted-foreground text-sm mt-1">
           El empleado recibirá un email con un enlace para completar su alta (válido 7 días).
         </p>
       </div>

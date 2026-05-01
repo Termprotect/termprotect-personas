@@ -87,12 +87,12 @@ export default function ActivarForm({
 
   if (success) {
     return (
-      <div className="bg-white rounded-xl border border-emerald-200 p-8 text-center space-y-3">
-        <div className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center mx-auto">
-          <CheckCircle2 className="w-6 h-6 text-emerald-600" />
+      <div className="bg-background rounded-xl border border-success/20 p-8 text-center space-y-3">
+        <div className="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center mx-auto">
+          <CheckCircle2 className="w-6 h-6 text-success" />
         </div>
-        <h2 className="text-lg font-bold text-slate-800">Alta completada</h2>
-        <p className="text-sm text-slate-500">
+        <h2 className="text-lg font-bold text-foreground">Alta completada</h2>
+        <p className="text-sm text-muted-foreground">
           Tu cuenta está activa. Redirigiendo al inicio de sesión...
         </p>
       </div>
@@ -102,10 +102,10 @@ export default function ActivarForm({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="bg-white rounded-xl border border-slate-200 p-6 space-y-6"
+      className="bg-background rounded-xl border border-border p-6 space-y-6"
     >
       {serverError && (
-        <div className="flex items-start gap-2 p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-700 text-sm">
+        <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
           <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
           <span>{serverError}</span>
         </div>
@@ -160,7 +160,7 @@ export default function ActivarForm({
 
       {requiresDriving && (
         <Section title="Permiso de conducir">
-          <p className="text-xs text-slate-500 mb-3">
+          <p className="text-xs text-muted-foreground mb-3">
             RRHH ha indicado que conduces vehículos de la empresa. Rellena estos campos.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -215,29 +215,29 @@ export default function ActivarForm({
       </Section>
 
       <Section title="Cláusula de protección de datos">
-        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm text-slate-700 leading-relaxed">
+        <div className="bg-secondary border border-border rounded-lg p-4 text-sm text-foreground leading-relaxed">
           {CLAUSULA_TEXTO}
         </div>
-        <label className="flex items-start gap-2 mt-3 text-sm text-slate-700 cursor-pointer">
+        <label className="flex items-start gap-2 mt-3 text-sm text-foreground cursor-pointer">
           <input
             type="checkbox"
             {...register("acceptClausula")}
-            className="mt-0.5 w-4 h-4 rounded border-slate-300 text-blue-600"
+            className="mt-0.5 w-4 h-4 rounded border-border text-primary"
           />
           <span>
             He leído y acepto la cláusula. Declaro que la información facilitada es veraz.
           </span>
         </label>
         {errors.acceptClausula && (
-          <p className="text-xs text-rose-600 mt-1">{errors.acceptClausula.message}</p>
+          <p className="text-xs text-destructive mt-1">{errors.acceptClausula.message}</p>
         )}
       </Section>
 
-      <div className="flex items-center justify-end pt-2 border-t border-slate-100">
+      <div className="flex items-center justify-end pt-2 border-t border-border">
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white text-sm font-medium rounded-lg transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 disabled:opacity-60 text-white text-sm font-medium rounded-lg transition-colors"
         >
           {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
           Completar mi alta
@@ -248,12 +248,12 @@ export default function ActivarForm({
 }
 
 const inputCls =
-  "w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white";
+  "w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent bg-background";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h2 className="text-sm font-semibold text-slate-800 mb-3">{title}</h2>
+      <h2 className="text-sm font-semibold text-foreground mb-3">{title}</h2>
       {children}
     </div>
   );
@@ -274,12 +274,12 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-600 mb-1">
-        {label} {required && <span className="text-rose-500">*</span>}
+      <label className="block text-xs font-medium text-muted-foreground mb-1">
+        {label} {required && <span className="text-destructive">*</span>}
       </label>
       {children}
-      {error && <p className="text-xs text-rose-600 mt-1">{error}</p>}
-      {!error && hint && <p className="text-xs text-slate-400 mt-1">{hint}</p>}
+      {error && <p className="text-xs text-destructive mt-1">{error}</p>}
+      {!error && hint && <p className="text-xs text-muted-foreground mt-1">{hint}</p>}
     </div>
   );
 }

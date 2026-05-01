@@ -36,17 +36,17 @@ export default async function ActivarPage({
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 py-10 px-4">
+    <main className="min-h-screen bg-secondary py-10 px-4">
       <div className="max-w-2xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-slate-800">Completa tu alta en Termprotect</h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <h1 className="text-2xl font-bold text-foreground">Completa tu alta en Termprotect</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Hola <strong>{employee.nombres} {employee.apellidos}</strong>. Revisa los datos precargados por RRHH, completa tu información y crea tu contraseña.
           </p>
         </div>
 
-        <div className="bg-white rounded-xl border border-slate-200 p-5 mb-5">
-          <h2 className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-3">Datos registrados por RRHH</h2>
+        <div className="bg-background rounded-xl border border-border p-5 mb-5">
+          <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-3">Datos registrados por RRHH</h2>
           <dl className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
             <Row label="Nombre" value={`${employee.nombres} ${employee.apellidos}`} />
             <Row label="Documento" value={`${employee.documentType} ${employee.documentNumber}`} />
@@ -55,7 +55,7 @@ export default async function ActivarPage({
             <Row label="Sede" value={employee.sede.name} />
             <Row label="Conducción de vehículos" value={employee.requiresDriving ? "Sí" : "No"} />
           </dl>
-          <p className="text-xs text-slate-400 mt-3">
+          <p className="text-xs text-muted-foreground mt-3">
             Si alguno de estos datos es incorrecto, contacta con RRHH antes de continuar.
           </p>
         </div>
@@ -73,8 +73,8 @@ export default async function ActivarPage({
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="text-xs text-slate-500">{label}</dt>
-      <dd className="text-slate-800 font-medium">{value}</dd>
+      <dt className="text-xs text-muted-foreground">{label}</dt>
+      <dd className="text-foreground font-medium">{value}</dd>
     </div>
   );
 }
@@ -89,19 +89,19 @@ function ErrorCard({
   variant: "error" | "warning" | "info";
 }) {
   const config = {
-    error: { bg: "bg-rose-50", icon: "text-rose-600", Icon: XCircle },
-    warning: { bg: "bg-amber-50", icon: "text-amber-600", Icon: Clock },
+    error: { bg: "bg-destructive/10", icon: "text-destructive", Icon: XCircle },
+    warning: { bg: "bg-warning/10", icon: "text-warning", Icon: Clock },
     info: { bg: "bg-sky-50", icon: "text-sky-600", Icon: Clock },
   }[variant];
   const Icon = config.Icon;
   return (
-    <main className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
-      <div className="w-full max-w-md bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center space-y-3">
+    <main className="min-h-screen bg-secondary flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-background rounded-xl border border-border shadow-sm p-8 text-center space-y-3">
         <div className={`w-12 h-12 rounded-full ${config.bg} flex items-center justify-center mx-auto`}>
           <Icon className={`w-6 h-6 ${config.icon}`} />
         </div>
-        <h1 className="text-xl font-bold text-slate-800">{title}</h1>
-        <p className="text-sm text-slate-500">{message}</p>
+        <h1 className="text-xl font-bold text-foreground">{title}</h1>
+        <p className="text-sm text-muted-foreground">{message}</p>
       </div>
     </main>
   );

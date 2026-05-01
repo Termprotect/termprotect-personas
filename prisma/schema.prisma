@@ -18,17 +18,38 @@ datasource db {
 model Sede {
   id           String   @id @default(cuid())
   name         String   @unique // Barcelona, Madrid, Valencia, Málaga
-  convenioCode String?           // ej: "28000805011982"
+  convenioCode String? // ej: "28000805011982"
   convenioName String?
-  vacationDays Int      @default(30) // días según convenio colectivo
+  vacationDays Int      @default(22) // fallback si no hay SedePolicy del año
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  employees Employee[]
-  calendars SedeCalendar[]
+  employees     Employee[]
+  calendars     SedeCalendar[]
   leaveBalances LeaveBalance[]
+  policies      SedePolicy[]
 
   @@map("sedes")
+}
+
+// ─────────────────────────────────────────────
+// POLÍTICA ANUAL POR SEDE
+// ─────────────────────────────────────────────
+
+model SedePolicy {
+  id                String   @id @default(cuid())
+  sedeId            String
+  year              Int
+  vacationDays      Int // días laborables de vacaciones
+  extraPersonalDays Int      @default(0) // días extra permisos personales (Madrid +2, etc.)
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  sede Sede @relation(fields: [sedeId], references: [id], onDelete: Cascade)
+
+  @@unique([sedeId, year])
+  @@map("sede_policies")
 }
 
 // ─────────────────────────────────────────────
@@ -36,11 +57,11 @@ model Sede {
 // ─────────────────────────────────────────────
 
 model SedeCalendar {
-  id          String           @id @default(cuid())
+  id          String          @id @default(cuid())
   sedeId      String
-  date        DateTime         @db.Date
+  date        DateTime        @db.Date
   description String
-  type        CalendarDayType  // NACIONAL, AUTONOMICO, LOCAL
+  type        CalendarDayType // NACIONAL, AUTONOMICO, LOCAL
 
   sede Sede @relation(fields: [sedeId], references: [id])
 
@@ -52,6 +73,7 @@ enum CalendarDayType {
   NACIONAL
   AUTONOMICO
   LOCAL
+  CONVENIO
 }
 
 // ─────────────────────────────────────────────
@@ -59,19 +81,19 @@ enum CalendarDayType {
 // ─────────────────────────────────────────────
 
 model Employee {
-  id               String         @id @default(cuid())
+  id String @id @default(cuid())
 
   // Datos personales
-  nombres          String
-  apellidos        String
-  documentType     DocumentType   // DNI, TIE, PASAPORTE
-  documentNumber   String         @unique // también es el username de login
-  address          String?
-  phone            String?
-  email            String?        // opcional — solo para notificaciones
-  birthDate        DateTime?      @db.Date
-  photoUrl         String?        // foto de perfil (tomada en el onboarding o subida por RRHH)
-  photoUploadedAt  DateTime?
+  nombres         String
+  apellidos       String
+  documentType    DocumentType // DNI, TIE, PASAPORTE
+  documentNumber  String       @unique // también es el username de login
+  address         String?
+  phone           String?
+  email           String? // opcional — solo para notificaciones
+  birthDate       DateTime?    @db.Date
+  photoUrl        String? // foto de perfil (tomada en el onboarding o subida por RRHH)
+  photoUploadedAt DateTime?
 
   // Contacto de emergencia
   emergencyName     String?
@@ -79,63 +101,63 @@ model Employee {
   emergencyRelation EmergencyRelation?
 
   // Datos laborales
-  sedeId                String
-  department            String?
-  position              String?
-  contractType          ContractType?
-  workMode              WorkMode       @default(PRESENCIAL)
-  startDate             DateTime?      @db.Date
-  endDate               DateTime?      @db.Date   // solo para contratos temporales
-  trialEndDate          DateTime?      @db.Date
-  requiresDriving       Boolean        @default(false)
-  status                EmployeeStatus @default(INVITADO)
-  socialSecurityNumber  String?        // NAF
-  reportsToId           String?        // jefe directo
+  sedeId               String
+  department           String?
+  position             String?
+  contractType         ContractType?
+  workMode             WorkMode       @default(PRESENCIAL)
+  startDate            DateTime?      @db.Date
+  endDate              DateTime?      @db.Date // solo para contratos temporales
+  trialEndDate         DateTime?      @db.Date
+  requiresDriving      Boolean        @default(false)
+  status               EmployeeStatus @default(INVITADO)
+  socialSecurityNumber String? // NAF
+  reportsToId          String? // jefe directo
 
   // Datos bancarios (capturados por el propio trabajador en el onboarding)
-  bankAccountHolder     String?
-  iban                  String?
+  bankAccountHolder String?
+  iban              String?
 
   // Datos de chofer (si requiresDriving = true)
-  drivingLicenseNumber     String?
-  drivingLicenseCategory   String?       // B, C, C+E, D...
-  drivingLicenseExpiresAt  DateTime?     @db.Date
-  capNumber                String?
-  capExpiresAt             DateTime?     @db.Date
+  drivingLicenseNumber    String?
+  drivingLicenseCategory  String? // B, C, C+E, D...
+  drivingLicenseExpiresAt DateTime? @db.Date
+  capNumber               String?
+  capExpiresAt            DateTime? @db.Date
 
   // Auth
-  passwordHash          String?
-  role                  UserRole   @default(EMPLEADO)
-  mustChangePassword    Boolean    @default(false)
-  lastLogin             DateTime?
+  passwordHash       String?
+  role               UserRole  @default(EMPLEADO)
+  mustChangePassword Boolean   @default(false)
+  lastLogin          DateTime?
 
   // Invitación (onboarding)
-  invitationToken          String?    @unique
+  invitationToken          String?   @unique
   invitationTokenExpiresAt DateTime?
   invitationSentAt         DateTime?
 
   // Cláusula RGPD firmada
-  clausulaVersion     String?
-  clausulaAcceptedAt  DateTime?
-  clausulaAcceptedIp  String?
+  clausulaVersion    String?
+  clausulaAcceptedAt DateTime?
+  clausulaAcceptedIp String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relaciones
-  sede             Sede             @relation(fields: [sedeId], references: [id])
-  reportsTo        Employee?        @relation("ReportingLine", fields: [reportsToId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  subordinates     Employee[]       @relation("ReportingLine")
-  documents        EmployeeDocument[]
-  history          EmployeeHistory[]
-  timeEntries      TimeEntry[]
-  leaveRequests    LeaveRequest[]
-  leaveBalances    LeaveBalance[]
-  evaluationsAsEmployee Evaluation[] @relation("EvaluatedEmployee")
-  evaluationsAsEvaluator Evaluation[] @relation("Evaluator")
-  trainingEnrollments TrainingEnrollment[]
-  notifications    Notification[]
-  auditLogs        AuditLog[]
+  sede                   Sede                 @relation(fields: [sedeId], references: [id])
+  reportsTo              Employee?            @relation("ReportingLine", fields: [reportsToId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  subordinates           Employee[]           @relation("ReportingLine")
+  documents              EmployeeDocument[]
+  history                EmployeeHistory[]
+  timeEntries            TimeEntry[]
+  leaveRequests          LeaveRequest[]
+  leaveBalances          LeaveBalance[]
+  evaluationsAsEmployee  Evaluation[]         @relation("EvaluatedEmployee")
+  evaluationsAsEvaluator Evaluation[]         @relation("Evaluator")
+  trainingEnrollments    TrainingEnrollment[]
+  notifications          Notification[]
+  auditLogs              AuditLog[]
 
   @@map("employees")
 }
@@ -188,14 +210,14 @@ enum UserRole {
 // ─────────────────────────────────────────────
 
 model EmployeeDocument {
-  id          String       @id @default(cuid())
-  employeeId  String
-  type        DocumentKind
-  fileUrl     String       // URL en Supabase Storage
-  fileName    String
-  expiresAt   DateTime?    @db.Date  // para DNI, permiso conducir, etc.
-  uploadedAt  DateTime     @default(now())
-  uploadedBy  String?      // id del usuario que subió el archivo
+  id         String       @id @default(cuid())
+  employeeId String
+  type       DocumentKind
+  fileUrl    String // URL en Supabase Storage
+  fileName   String
+  expiresAt  DateTime?    @db.Date // para DNI, permiso conducir, etc.
+  uploadedAt DateTime     @default(now())
+  uploadedBy String? // id del usuario que subió el archivo
 
   employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
@@ -224,10 +246,10 @@ enum DocumentKind {
 model EmployeeHistory {
   id         String   @id @default(cuid())
   employeeId String
-  field      String   // "sede", "position", "contractType", etc.
+  field      String // "sede", "position", "contractType", etc.
   oldValue   String?
   newValue   String?
-  changedBy  String   // id del usuario que hizo el cambio
+  changedBy  String // id del usuario que hizo el cambio
   changedAt  DateTime @default(now())
   reason     String?
 
@@ -241,21 +263,24 @@ model EmployeeHistory {
 // ─────────────────────────────────────────────
 
 model TimeEntry {
-  id           String          @id @default(cuid())
-  employeeId   String
-  date         DateTime        @db.Date
-  clockIn      DateTime        // hora de entrada
-  clockOut     DateTime?       // hora de salida (null si aún en jornada)
-  breakMinutes Int             @default(0)
-  source       TimeEntrySource @default(WEB)
-  ipAddress    String?
-  notes        String?
-  isManual     Boolean         @default(false) // true si RRHH lo añadió manualmente
-  manualReason String?
-  createdAt    DateTime        @default(now())
+  id             String          @id @default(cuid())
+  employeeId     String
+  date           DateTime        @db.Date
+  clockIn        DateTime // hora de entrada
+  clockOut       DateTime? // hora de salida (null si aún en jornada)
+  breakMinutes   Int             @default(0)
+  breakStartedAt DateTime? // si no es null, hay una pausa en curso
+  source         TimeEntrySource @default(WEB)
+  ipAddress      String?
+  notes          String?
+  isManual       Boolean         @default(false) // true si RRHH lo añadió manualmente
+  manualReason   String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
   employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
+  @@unique([employeeId, date])
   @@map("time_entries")
 }
 
@@ -270,20 +295,20 @@ enum TimeEntrySource {
 // ─────────────────────────────────────────────
 
 model LeaveRequest {
-  id          String      @id @default(cuid())
-  employeeId  String
-  type        LeaveType
-  startDate   DateTime    @db.Date
-  endDate     DateTime    @db.Date
-  totalDays   Int
-  status      LeaveStatus @default(PENDIENTE)
-  notes       String?
-  approvedBy  String?     // id del manager/RRHH que aprueba
-  approvedAt  DateTime?
+  id             String      @id @default(cuid())
+  employeeId     String
+  type           LeaveType
+  startDate      DateTime    @db.Date
+  endDate        DateTime    @db.Date
+  totalDays      Int
+  status         LeaveStatus @default(PENDIENTE)
+  notes          String?
+  approvedBy     String? // id del manager/RRHH que aprueba
+  approvedAt     DateTime?
   rejectedReason String?
-  attachmentUrl String?   // justificante (IT, permiso, etc.)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  attachmentUrl  String? // justificante (IT, permiso, etc.)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
   employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
@@ -316,16 +341,24 @@ enum LeaveStatus {
   CANCELADA
 }
 
-// Saldo de vacaciones por empleado y año
+// Saldo anual por empleado: vacaciones + días personales extra (asuntos propios)
 model LeaveBalance {
-  id            String   @id @default(cuid())
-  employeeId    String
-  sedeId        String
-  year          Int
-  totalDays     Int      // días que corresponden según convenio
-  usedDays      Int      @default(0)
-  pendingDays   Int      @default(0) // solicitudes pendientes de aprobar
-  updatedAt     DateTime @updatedAt
+  id         String @id @default(cuid())
+  employeeId String
+  sedeId     String
+  year       Int
+
+  // Cupo de VACACIONES
+  totalDays   Int // días que corresponden según convenio/política
+  usedDays    Int @default(0)
+  pendingDays Int @default(0) // solicitudes pendientes de aprobar
+
+  // Cupo de ASUNTOS PROPIOS / permisos personales extra (según sede)
+  personalTotal   Int @default(0)
+  personalUsed    Int @default(0)
+  personalPending Int @default(0)
+
+  updatedAt DateTime @updatedAt
 
   employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   sede     Sede     @relation(fields: [sedeId], references: [id])
@@ -338,18 +371,42 @@ model LeaveBalance {
 // EVALUACIÓN DEL DESEMPEÑO
 // ─────────────────────────────────────────────
 
-model EvalCycle {
-  id          String          @id @default(cuid())
-  name        String          // "Evaluación Semestral S1 2025"
-  startDate   DateTime        @db.Date
-  endDate     DateTime        @db.Date
-  status      EvalCycleStatus @default(BORRADOR)
+// Plantilla reutilizable de preguntas para evaluaciones por pares
+// o evaluaciones temáticas (p. ej. Presupuesto — ofertas / PEM)
+model EvalTemplate {
+  id          String   @id @default(cuid())
+  name        String // "Presupuesto — Creación de ofertas"
+  description String?
+  // JSON: [{ id: "comunicacion", label: "Comunicación", help?: "…" }, ...]
+  questions   Json
+  archived    Boolean  @default(false)
   createdBy   String
-  createdAt   DateTime        @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  evaluations Evaluation[]
+
+  @@map("eval_templates")
+}
+
+model EvalCycle {
+  id        String          @id @default(cuid())
+  name      String // "Evaluación Semestral S1 2025"
+  kind      EvalCycleKind   @default(ANNUAL)
+  startDate DateTime        @db.Date
+  endDate   DateTime        @db.Date
+  status    EvalCycleStatus @default(BORRADOR)
+  createdBy String
+  createdAt DateTime        @default(now())
 
   evaluations Evaluation[]
 
   @@map("eval_cycles")
+}
+
+enum EvalCycleKind {
+  ANNUAL // flujo clásico: 8 competencias, auto + manager
+  MONTHLY_PEER // por pares: cada evaluado recibe N evaluaciones con plantilla
 }
 
 enum EvalCycleStatus {
@@ -359,26 +416,36 @@ enum EvalCycleStatus {
 }
 
 model Evaluation {
-  id              String      @id @default(cuid())
+  id              String        @id @default(cuid())
   cycleId         String
   employeeId      String
   evaluatorId     String
-  selfScores      Json?       // { calidad: 4, objetivos: 3, trabajo_equipo: 5, ... }
-  managerScores   Json?       // mismas dimensiones
+  evaluatorType   EvaluatorType @default(MANAGER)
+  templateId      String? // null => competencias fijas (flujo anual)
+  selfScores      Json? // { calidad: 4, objetivos: 3, ... } o respuestas por plantilla
+  managerScores   Json? // mismas dimensiones / respuestas del evaluador
   overallScore    Float?
   selfComments    String?
   managerComments String?
-  status          EvalStatus  @default(PENDIENTE)
-  pipRequired     Boolean     @default(false)
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  status          EvalStatus    @default(PENDIENTE)
+  pipRequired     Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
-  cycle    EvalCycle @relation(fields: [cycleId], references: [id])
-  employee Employee  @relation("EvaluatedEmployee", fields: [employeeId], references: [id])
-  evaluator Employee @relation("Evaluator", fields: [evaluatorId], references: [id])
+  cycle           EvalCycle        @relation(fields: [cycleId], references: [id])
+  employee        Employee         @relation("EvaluatedEmployee", fields: [employeeId], references: [id])
+  evaluator       Employee         @relation("Evaluator", fields: [evaluatorId], references: [id])
+  template        EvalTemplate?    @relation(fields: [templateId], references: [id])
   improvementPlan ImprovementPlan?
 
+  @@unique([cycleId, employeeId, evaluatorId])
   @@map("evaluations")
+}
+
+enum EvaluatorType {
+  MANAGER // jefe directo (flujo anual)
+  PEER // par / compañero (flujo mensual por pares)
+  SELF // autoevaluación independiente (reservado)
 }
 
 enum EvalStatus {
@@ -415,7 +482,7 @@ model Training {
   hours          Float
   cost           Float?
   mandatory      Boolean      @default(false)
-  mandatoryType  String?      // "PRL", "RGPD", "IGUALDAD", etc.
+  mandatoryType  String? // "PRL", "RGPD", "IGUALDAD", etc.
   fundaeEligible Boolean      @default(false)
   description    String?
   startDate      DateTime?    @db.Date
@@ -434,17 +501,17 @@ enum TrainingMode {
 }
 
 model TrainingEnrollment {
-  id            String           @id @default(cuid())
-  trainingId    String
-  employeeId    String
-  status        EnrollmentStatus @default(INSCRITO)
-  completedAt   DateTime?
+  id             String           @id @default(cuid())
+  trainingId     String
+  employeeId     String
+  status         EnrollmentStatus @default(INSCRITO)
+  completedAt    DateTime?
   certificateUrl String?
   hoursCompleted Float?
-  createdAt     DateTime         @default(now())
+  createdAt      DateTime         @default(now())
 
   training Training @relation(fields: [trainingId], references: [id])
-  employee Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
   @@unique([trainingId, employeeId])
   @@map("training_enrollments")
@@ -464,7 +531,7 @@ enum EnrollmentStatus {
 model Notification {
   id         String   @id @default(cuid())
   employeeId String
-  type       String   // "LEAVE_APPROVED", "CONTRACT_EXPIRING", etc.
+  type       String // "LEAVE_APPROVED", "CONTRACT_EXPIRING", etc.
   title      String
   message    String
   read       Boolean  @default(false)
@@ -482,9 +549,9 @@ model Notification {
 
 model AuditLog {
   id         String   @id @default(cuid())
-  userId     String   // quien hizo la acción
-  action     String   // "VIEW_EMPLOYEE", "EDIT_EMPLOYEE", "DELETE_DOCUMENT", etc.
-  entityType String   // "Employee", "Document", "TimeEntry", etc.
+  userId     String // quien hizo la acción
+  action     String // "VIEW_EMPLOYEE", "EDIT_EMPLOYEE", "DELETE_DOCUMENT", etc.
+  entityType String // "Employee", "Document", "TimeEntry", etc.
   entityId   String?
   details    Json?
   ipAddress  String?

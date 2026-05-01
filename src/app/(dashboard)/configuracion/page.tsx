@@ -1,18 +1,91 @@
-export default function Page() {
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { Building2, ChevronRight } from "lucide-react";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+
+export const dynamic = "force-dynamic";
+
+export default async function ConfiguracionPage() {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+
+  const role = session.user.role;
+  if (role !== "ADMIN" && role !== "RRHH") redirect("/inicio");
+
+  const currentYear = new Date().getFullYear();
+
+  const sedes = await db.sede.findMany({
+    orderBy: { name: "asc" },
+    include: {
+      policies: {
+        where: { year: currentYear },
+        take: 1,
+      },
+      _count: {
+        select: {
+          employees: true,
+          calendars: { where: { date: {
+            gte: new Date(Date.UTC(currentYear, 0, 1)),
+            lt: new Date(Date.UTC(currentYear + 1, 0, 1)),
+          } } },
+        },
+      },
+    },
+  });
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-5xl">
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">Configuración</h1>
-        <p className="text-slate-500 text-sm mt-1">Gestión de sedes, convenios y usuarios</p>
+        <h1 className="text-2xl font-bold text-foreground">Configuración</h1>
+        <p className="text-muted-foreground text-sm mt-1">
+          Calendario laboral y políticas de vacaciones por sede. Configúralo
+          cada año antes del periodo de solicitudes.
+        </p>
       </div>
-      <div className="bg-white rounded-xl border border-slate-200 p-8 text-center">
-        <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mx-auto mb-4">
-          <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
+
+      <div className="bg-background rounded-xl border border-border overflow-hidden">
+        <div className="p-4 border-b border-border flex items-center gap-2">
+          <Building2 className="w-4 h-4 text-muted-foreground" />
+          <h2 className="text-sm font-semibold text-foreground">
+            Sedes ({sedes.length})
+          </h2>
         </div>
-        <p className="text-slate-600 font-medium">Módulo en construcción</p>
-        <p className="text-slate-400 text-sm mt-1">Este módulo estará disponible próximamente.</p>
+        <ul className="divide-y divide-border">
+          {sedes.map((s) => {
+            const policy = s.policies[0];
+            const holidaysCount = s._count.calendars;
+            const hasPolicy = !!policy;
+            return (
+              <li key={s.id}>
+                <Link
+                  href={`/configuracion/sedes/${s.id}`}
+                  className="flex items-center justify-between gap-4 p-4 hover:bg-secondary transition-colors"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-foreground">{s.name}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {s._count.employees} empleados · {holidaysCount} festivos
+                      en {currentYear}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {hasPolicy ? (
+                      <span className="text-xs font-medium text-success bg-success/10 border border-success/20 px-2 py-1 rounded-full">
+                        {currentYear} configurado
+                      </span>
+                    ) : (
+                      <span className="text-xs font-medium text-warning bg-warning/10 border border-warning/20 px-2 py-1 rounded-full">
+                        Sin política {currentYear}
+                      </span>
+                    )}
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </div>
   );

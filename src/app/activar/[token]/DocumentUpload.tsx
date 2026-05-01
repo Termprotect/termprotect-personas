@@ -51,21 +51,21 @@ export default function DocumentUpload({
   };
 
   return (
-    <div className="flex items-start gap-3 p-3 border border-slate-200 rounded-lg">
-      <div className="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-        <FileText className="w-4 h-4 text-slate-500" />
+    <div className="flex items-start gap-3 p-3 border border-border rounded-lg">
+      <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
+        <FileText className="w-4 h-4 text-muted-foreground" />
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <p className="text-sm font-medium text-slate-800">{slot.label}</p>
-          {slot.required && <span className="text-xs text-rose-500">*</span>}
+          <p className="text-sm font-medium text-foreground">{slot.label}</p>
+          {slot.required && <span className="text-xs text-destructive">*</span>}
         </div>
         {slot.description && (
-          <p className="text-xs text-slate-500 mt-0.5">{slot.description}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{slot.description}</p>
         )}
 
         {uploaded ? (
-          <p className="text-xs text-emerald-700 mt-1 flex items-center gap-1">
+          <p className="text-xs text-success mt-1 flex items-center gap-1">
             <Check className="w-3 h-3" />
             Subido: {uploaded.fileName}
             <button
@@ -74,7 +74,7 @@ export default function DocumentUpload({
                 setUploaded(null);
                 inputRef.current?.click();
               }}
-              className="ml-2 text-slate-500 hover:text-slate-700 underline"
+              className="ml-2 text-muted-foreground hover:text-foreground underline"
             >
               Reemplazar
             </button>
@@ -85,7 +85,7 @@ export default function DocumentUpload({
               type="button"
               onClick={() => inputRef.current?.click()}
               disabled={uploading}
-              className="inline-flex items-center gap-2 px-3 py-1.5 text-xs border border-slate-200 hover:bg-slate-50 disabled:opacity-60 rounded-md text-slate-700"
+              className="inline-flex items-center gap-2 px-3 py-1.5 text-xs border border-border hover:bg-secondary disabled:opacity-60 rounded-md text-foreground"
             >
               {uploading ? (
                 <Loader2 className="w-3 h-3 animate-spin" />
@@ -105,12 +105,12 @@ export default function DocumentUpload({
               }}
               className="hidden"
             />
-            <p className="text-xs text-slate-400 mt-1">JPG, PNG, WEBP o PDF. Máx 10 MB.</p>
+            <p className="text-xs text-muted-foreground mt-1">JPG, PNG, WEBP o PDF. Máx 10 MB.</p>
           </div>
         )}
 
         {error && (
-          <p className="text-xs text-rose-600 mt-1 flex items-center gap-1">
+          <p className="text-xs text-destructive mt-1 flex items-center gap-1">
             <AlertCircle className="w-3 h-3" /> {error}
           </p>
         )}
