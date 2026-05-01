@@ -225,7 +225,7 @@ export default async function Page({
                           </span>
                           <Link
                             href={`/formacion/${t.id}`}
-                            className="font-semibold text-foreground hover:text-sky-700 line-clamp-2 text-[10px]"
+                            className="font-semibold text-foreground hover:text-accent line-clamp-2 text-[10px]"
                           >
                             {t.title}
                           </Link>
@@ -302,7 +302,7 @@ function Cell({ status }: { status: CellStatus | undefined }) {
     return (
       <span
         title="Inscrito (en curso)"
-        className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-sky-100 text-sky-700"
+        className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-accent/20 text-accent"
       >
         <Clock className="w-4 h-4" />
       </span>
@@ -349,7 +349,7 @@ function Legend() {
         Completado
       </span>
       <span className="inline-flex items-center gap-1">
-        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-sky-100 text-sky-700">
+        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-accent/20 text-accent">
           <Clock className="w-3 h-3" />
         </span>
         Inscrito

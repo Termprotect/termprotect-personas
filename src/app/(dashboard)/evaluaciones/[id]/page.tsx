@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 
 const STATUS_COLOR: Record<string, string> = {
   PENDIENTE: "bg-muted text-foreground border-border",
-  AUTOEVALUACION_COMPLETADA: "bg-sky-50 text-sky-700 border-sky-200",
+  AUTOEVALUACION_COMPLETADA: "bg-accent/15 text-accent border-accent/30",
   MANAGER_COMPLETADA: "bg-warning/10 text-warning border-warning/20",
   CERRADA: "bg-success/10 text-success border-success/20",
 };

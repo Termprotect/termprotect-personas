@@ -22,7 +22,7 @@ const fmtDate = (d: Date | null) => {
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  INSCRITO: "bg-sky-50 text-sky-700 border-sky-200",
+  INSCRITO: "bg-accent/15 text-accent border-accent/30",
   COMPLETADO: "bg-success/10 text-success border-success/20",
   NO_ASISTIO: "bg-warning/10 text-warning border-warning/20",
   CANCELADO: "bg-muted text-muted-foreground border-border",
@@ -109,7 +109,7 @@ export default async function Page() {
                         <div>
                           <Link
                             href={`/formacion/${e.training.id}`}
-                            className="font-medium text-foreground hover:text-sky-700"
+                            className="font-medium text-foreground hover:text-accent"
                           >
                             {e.training.title}
                           </Link>

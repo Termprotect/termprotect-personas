@@ -18,7 +18,7 @@ const CYCLE_STATUS_COLOR: Record<string, string> = {
 
 const STATUS_COLOR: Record<string, string> = {
   PENDIENTE: "bg-muted text-foreground border-border",
-  AUTOEVALUACION_COMPLETADA: "bg-sky-50 text-sky-700 border-sky-200",
+  AUTOEVALUACION_COMPLETADA: "bg-accent/15 text-accent border-accent/30",
   MANAGER_COMPLETADA: "bg-warning/10 text-warning border-warning/20",
   CERRADA: "bg-success/10 text-success border-success/20",
 };
@@ -163,7 +163,7 @@ export default async function Page({
               className={`inline-flex items-center px-2 py-0.5 border rounded-md text-[11px] font-semibold ${
                 cycle.kind === "MONTHLY_PEER"
                   ? "bg-info/10 text-primary border-border"
-                  : "bg-sky-50 text-sky-700 border-sky-200"
+                  : "bg-accent/15 text-accent border-accent/30"
               }`}
             >
               {cycle.kind === "MONTHLY_PEER" ? "Pares" : "Anual"}
@@ -222,7 +222,7 @@ function Stat({
 }) {
   const color = {
     slate: "text-foreground",
-    sky: "text-sky-700",
+    sky: "text-accent",
     amber: "text-warning",
     emerald: "text-success",
     rose: "text-destructive",

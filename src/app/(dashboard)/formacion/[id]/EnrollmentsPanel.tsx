@@ -47,7 +47,7 @@ type CompleteForm = {
 };
 
 const STATUS_COLOR: Record<EnrollmentRow["status"], string> = {
-  INSCRITO: "bg-sky-50 text-sky-700 border-sky-200",
+  INSCRITO: "bg-accent/15 text-accent border-accent/30",
   COMPLETADO: "bg-success/10 text-success border-success/20",
   NO_ASISTIO: "bg-warning/10 text-warning border-warning/20",
   CANCELADO: "bg-muted text-muted-foreground border-border",
@@ -288,7 +288,7 @@ export default function EnrollmentsPanel({
                             onClick={() =>
                               updateStatus(e.id, { status: "INSCRITO" })
                             }
-                            className="p-1.5 text-sky-600 hover:bg-sky-50 rounded-md disabled:opacity-50 text-xs font-semibold"
+                            className="p-1.5 text-accent hover:bg-accent/15 rounded-md disabled:opacity-50 text-xs font-semibold"
                             title="Volver a inscrito"
                           >
                             ↺
@@ -569,7 +569,7 @@ function EmployeePicker({
             <span>{selected.size} seleccionados · {filtered.length} mostrados</span>
             <button
               onClick={toggleAll}
-              className="text-sky-600 hover:text-sky-700 font-semibold"
+              className="text-accent hover:text-accent font-semibold"
             >
               {filtered.every((c) => selected.has(c.id)) && filtered.length > 0
                 ? "Quitar todos"
@@ -593,7 +593,7 @@ function EmployeePicker({
                   <li key={c.id}>
                     <label
                       className={`flex items-center gap-3 px-4 py-2 cursor-pointer ${
-                        checked ? "bg-sky-50" : "hover:bg-secondary"
+                        checked ? "bg-accent/15" : "hover:bg-secondary"
                       }`}
                     >
                       <input

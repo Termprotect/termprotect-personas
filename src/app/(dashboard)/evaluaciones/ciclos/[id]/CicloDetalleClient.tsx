@@ -344,7 +344,7 @@ export default function CicloDetalleClient({
                       <div className="flex items-center justify-end gap-2">
                         <Link
                           href={`/evaluaciones/${r.id}`}
-                          className="text-sky-700 font-semibold hover:text-sky-800 text-sm"
+                          className="text-accent font-semibold hover:text-accent text-sm"
                         >
                           Abrir →
                         </Link>
@@ -655,7 +655,7 @@ function PeerAddModal({
             No hay plantillas disponibles. Crea una primero en{" "}
             <Link
               href="/evaluaciones/plantillas"
-              className="text-sky-700 font-semibold"
+              className="text-accent font-semibold"
             >
               Plantillas
             </Link>

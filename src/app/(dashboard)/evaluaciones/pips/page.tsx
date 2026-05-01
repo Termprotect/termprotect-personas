@@ -191,7 +191,7 @@ export default async function Page({
                       <td className="px-4 py-2 text-right">
                         <Link
                           href={`/evaluaciones/${p.evaluationId}`}
-                          className="text-sky-700 font-semibold hover:text-sky-800 text-sm"
+                          className="text-accent font-semibold hover:text-accent text-sm"
                         >
                           Abrir →
                         </Link>

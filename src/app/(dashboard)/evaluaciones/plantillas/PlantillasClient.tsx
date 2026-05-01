@@ -335,7 +335,7 @@ function TemplateEditor({
               {!lockedQuestions && (
                 <button
                   onClick={addQ}
-                  className="text-xs text-sky-700 hover:text-sky-900"
+                  className="text-xs text-accent hover:text-accent"
                 >
                   + Añadir
                 </button>

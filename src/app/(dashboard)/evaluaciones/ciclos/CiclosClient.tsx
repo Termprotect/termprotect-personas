@@ -24,7 +24,7 @@ type Cycle = {
 };
 
 const KIND_BADGE: Record<Cycle["kind"], string> = {
-  ANNUAL: "bg-sky-50 text-sky-700 border-sky-200",
+  ANNUAL: "bg-accent/15 text-accent border-accent/30",
   MONTHLY_PEER: "bg-info/10 text-primary border-border",
 };
 const KIND_LABEL: Record<Cycle["kind"], string> = {
@@ -143,7 +143,7 @@ export default function CiclosClient({
                         <div className="flex items-center gap-2 flex-wrap">
                           <Link
                             href={`/evaluaciones/ciclos/${c.id}`}
-                            className="font-medium text-foreground hover:text-sky-700"
+                            className="font-medium text-foreground hover:text-accent"
                           >
                             {c.name}
                           </Link>
@@ -177,7 +177,7 @@ export default function CiclosClient({
                         <div className="flex items-center justify-end gap-1">
                           <Link
                             href={`/evaluaciones/ciclos/${c.id}`}
-                            className="px-2 py-1 text-xs text-sky-700 hover:bg-sky-50 rounded-md font-semibold"
+                            className="px-2 py-1 text-xs text-accent hover:bg-accent/15 rounded-md font-semibold"
                           >
                             Gestionar
                           </Link>
@@ -293,7 +293,7 @@ function NewCycleModal({
                 onClick={() => setKind("ANNUAL")}
                 className={`px-3 py-2 border rounded-lg text-xs text-left ${
                   kind === "ANNUAL"
-                    ? "bg-sky-50 border-sky-300 text-sky-900"
+                    ? "bg-accent/15 border-accent/40 text-accent"
                     : "border-border text-muted-foreground hover:border-border"
                 }`}
               >

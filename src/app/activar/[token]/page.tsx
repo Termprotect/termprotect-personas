@@ -91,7 +91,7 @@ function ErrorCard({
   const config = {
     error: { bg: "bg-destructive/10", icon: "text-destructive", Icon: XCircle },
     warning: { bg: "bg-warning/10", icon: "text-warning", Icon: Clock },
-    info: { bg: "bg-sky-50", icon: "text-sky-600", Icon: Clock },
+    info: { bg: "bg-accent/15", icon: "text-accent", Icon: Clock },
   }[variant];
   const Icon = config.Icon;
   return (

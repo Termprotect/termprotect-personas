@@ -302,8 +302,8 @@ function ScoresCard({
                     }
                     className={`w-8 h-8 rounded-lg border text-sm font-semibold transition ${
                       selected
-                        ? "bg-sky-600 border-sky-600 text-white"
-                        : "bg-background border-border text-muted-foreground hover:border-sky-300"
+                        ? "bg-accent border-accent text-white"
+                        : "bg-background border-border text-muted-foreground hover:border-accent/40"
                     } ${readOnly ? "opacity-70 cursor-default" : ""}`}
                     title={SCALE_LABELS[v]}
                   >
